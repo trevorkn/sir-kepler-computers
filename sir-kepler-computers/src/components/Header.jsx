@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import React, {useState} from 'react';
 import { useSearchStore } from '../stores/searchStore';
 import { useCartStore } from '../stores/cartStore';
+import MobileMenu from './MobileMenu'
 
 
 
@@ -11,6 +12,7 @@ const Header = () => {
     const navigate = useNavigate();
 
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+        const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const handleSearchSubmit = () => {
         if (searchTerm.trim() !== "") {
@@ -33,20 +35,21 @@ const Header = () => {
 
     const cart = useCartStore((state) => state.cart);
     return (
-        <header className='bg-blue-900 text-white shadow-md'>
+        <header className='relative bg-white text-black shadow-md mt-8'>
             {/* Top part*/}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 md:px-8 md:px-4">
-                <div className= "flex items-center space-x-2 mb-2 md:mb-0">
-                    <img src="/sirkeplogo.jpg" width="50" height="40" alt="" />
-                    <Link to="/" aria-label="Home" className='font-bold text-xl'>Sir Kepler Computers</Link>
+            <div className="flex justify-between items-center px-4 md:px-6 py-3 border-b">
+                <div className= "flex items-center space-x-2 flex-shrink">
+                    <img src="/sirkeplogo.jpg" className='w-10 h-8 md:w-12 md:h-10' alt="" />
+                    <Link to="/" aria-label="Home" className='font-bold text-lg sm:text-xl md:text-2xl'>Sir Kepler Computers</Link>
                 </div>
-                
-                <div className="relative w-full md:w-1/3 mb-2 md:mb-0 overflow-hidden">
+
+                {/* Search Box */}
+                <div className="flex flex-1 relative max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-2">
                 <input 
                 type="text" 
                 value={searchTerm}
-                placeholder="Search computers" 
-                className="w-full px-4 py-2 rounded-l-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search ..." 
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md text-black focus:outline-none focus:ring-2 focus:ring-gray-500 text-sm sm:text-base"
                 aria-label="Search products"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -56,19 +59,19 @@ const Header = () => {
                  />
                  <button
                   onClick={handleSearchSubmit}
-                  className='absolute right-0 top-0 h-full bg-black hover:bg-gray-800 text-white px-4 rounded-r-md'
+                  className='px-3 sm:px-4 py-2 bg-gray-200 hover:bg-gray-300 text-sm border border-gray-300 rounded-r-md whitespace-nowrap'
                   >
                     Search</button>
 
                   {/* Dropdown */}
                   {isDropdownOpen && lastFourSearches.length > 0 && (
                     <ul
-                    className="absolute left-0 right-0 mt-1 bg-white text-black rounded-md shadow-lg z-10 w-full">
+                    className="absolute left-0 right-0 mt-1 bg-white text-black border rounded-md shadow-md z-10">
                     {lastFourSearches.map((term, index) => (
                         <li 
                         key={index}
                         onMouseDown={() => handleDropdownClick(term)}
-                        className="px-3 py-2 hover:bg-gray-200 cursor-pointer"
+                        className="px-3 py-2 hover:bg-gray-200 cursor-pointer text-sm"
                         >
                             {term}
                             </li>
@@ -78,26 +81,41 @@ const Header = () => {
                   )}
                   </div>
               
-
-                <div className="flex items-center space-x-4">
-                <div className="cursor-pointer" aria-label="Cart">🛒Cart: {cart.length}</div>
-                <div className="cursor-pointer">Login</div>
-                <div className="cursor-pointer" aria-label="Menu">☰</div>
-                </div>
+                    {/* Right Side: login*/}
+                    
+                
+                <button className="text-sm hover:underline  cursor-pointer">Login</button>
                </div>
+               
                 {/*Bottom part- navigation links*/}
-                <nav className='bg-blue-800'>
-                    <div className='container mx-auto px-4 flex justify-center space-x-6 py-2'>
-                    <Link to="/" className='hover:text-gray-300 transition-colors duration-200'>Home</Link>
-                    <Link to="/flash-sale" className='hover:text-gray-300 transition-colors duration-200'>Flash-Sale</Link>
-                    <Link to="/featured" className='hover:text-gray-300 transition-colors duration-200'>Featured</Link>
-                    <Link to="/contact-us" className='hover:text-gray-300 transition-colors duration-200'>Contact-Us</Link>
-                    <Link to="/services-repair" className='hover:text-gray-300 transition-colors duration-200'>Services / Repair</Link>
-                    <Link to="/blogs" className='hover:text-gray-300'>Blogs</Link>
+                <nav className='flex items-center justify-between px-6 py-2 border-b text-sm cursor-pointer'>
+                    {/* Left: hamburger placeholder (for symmetry on desktop) */}
+                    <button className='w-6'
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >☰</button>
+
+                    {/* Center Links */}
+                    <div className='flex space-x-10'>
+                        <Link to="/" className='hover:underline'>Home</Link>
+                        <Link to="/store" className='hover:underline'>Store</Link>
+                        <Link to="/blogs" className='hover:underline'>Blogs</Link>
+                        <Link to="/contact-us" className='hover:underline'>Contact Us</Link>
                     </div>
+
+                    {/* Right: cart */}
+                    <Link to="/cart" aria-label='cart' className='relative'>
+                    🛒
+                    {cart.length > 0 && (
+                        <span className="absolute -top-2 -right-2 text-xs bg-red-600 text-white px-1 rounded-full">
+                            {cart.length}
+                        </span>
+                    )}
+                    </Link>
                 </nav>
+
+                    <MobileMenu isOpen={isMobileMenuOpen} />
         </header>
-    )
-}
+    );
+};
 
 export default Header;

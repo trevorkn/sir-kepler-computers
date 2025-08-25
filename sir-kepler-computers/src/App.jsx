@@ -5,6 +5,7 @@ import SearchResults from './components/SearchResults';
 import Home from './pages/Home';
 import { Routes, Route } from 'react-router-dom';
 import CategoryPage from './pages/CategoryPage';
+import Hero from './components/Hero'
 
 const App = () => {
 
@@ -16,6 +17,7 @@ const App = () => {
     <div className="w-full m-0 p-0 text-center">
       
    <Header />
+   <Hero />
    <Routes>
    <Route path="/" element={<Home />} />
    <Route path="/search-results" element={<SearchResults />} />
