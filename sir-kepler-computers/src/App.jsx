@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import { Routes, Route } from 'react-router-dom';
 import CategoryPage from './pages/CategoryPage';
 import Hero from './components/Hero'
+import FlashSale from './components/FlashSale'
 
 const App = () => {
 
@@ -18,6 +19,7 @@ const App = () => {
       
    <Header />
    <Hero />
+   <FlashSale />
    <Routes>
    <Route path="/" element={<Home />} />
    <Route path="/search-results" element={<SearchResults />} />
