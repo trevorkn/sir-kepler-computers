@@ -82,6 +82,11 @@ const formatPrice = (num, currency = "KSh") => {
         <span className={`font-semibold ${oldPrice ? "text-red-600": ""}`}>
           {formatPrice(price)}
         </span>
+        {product.ratings?.count > 0 && (
+            <span className='text-yellow-500 text-sm ml-auto'>
+               ⭐{(product.ratings.totalScore / product.ratings.count).toFixed(1)} 
+            </span>
+        )}
       </div>
     </div>
   </Link>

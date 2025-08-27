@@ -1,55 +1,114 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import productsData from '../data/products.json'; // your JSON file
+import { useState } from "react";
+import products from "../data/products";
+import { addReview, getAverageRating } from "../utils/ratingUtils";
 
-const formatPrice = (num, currency = "KSh") => {
-  if (typeof num !== "number") return "";
-  return `${currency} ${num.toLocaleString()}`;
-};
+export default function ProductDetails({ productId, loggedInUserId, onAddToCart }) {
+  // Find product by ID (make sure ID is number)
+  const product = products.find((p) => p.id === Number(productId));
 
-export default function ProductDetails() {
-  const { id } = useParams(); // grabs the :id from the URL
-  const product = productsData.find(p => p.id === Number(id));
-
+  // Fallback if product not found
   if (!product) {
-    return (
-      <div className="text-center mt-20">
-        <h2 className="text-2xl font-bold">Product Not Found</h2>
-        <Link to="/" className="text-blue-500 mt-4 inline-block">Go Back Home</Link>
-      </div>
-    );
+    return <p className="p-4 text-red-500">Product not found.</p>;
   }
 
-  return (
-    <div className="max-w-4xl mx-auto my-10 p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Product Image */}
-        <img 
-          src={product.image} 
-          alt={product.name} 
-          className="w-full md:w-1/2 rounded-xl object-cover"
-        />
+  const [currentProduct, setCurrentProduct] = useState(product);
+  const [newStars, setNewStars] = useState(0);
+  const [newText, setNewText] = useState("");
 
-        {/* Product Info */}
-        <div className="flex-1 flex flex-col gap-4">
-          <h1 className="text-3xl font-bold">{product.name}</h1>
-          <p className="text-xl font-semibold text-green-600">{formatPrice(product.price)}</p>
-          <div>
-            <h2 className="font-semibold mb-2">Specifications:</h2>
-            <ul className="list-disc list-inside">
-              {product.specs.map((spec, idx) => (
-                <li key={idx}>{spec}</li>
-              ))}
-            </ul>
-          </div>
-          <Link 
-            to="/"
-            className="mt-auto inline-block text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg w-fit"
-          >
-            Back to Store
-          </Link>
-        </div>
+  // Mock function: check if user bought this product
+  // Replace with real logic or API call
+  const userHasPurchased = product.purchasedBy?.includes(loggedInUserId);
+
+  const handleSubmit = () => {
+    if (newStars === 0 || newText.trim() === "" || !userHasPurchased) return;
+
+    const updated = addReview(currentProduct, newStars, newText, `User-${loggedInUserId}`);
+    setCurrentProduct(updated);
+    setNewStars(0);
+    setNewText("");
+  };
+
+  return (
+    <div className="p-6 max-w-3xl mx-auto text-left">
+      {/* Product Info */}
+      <img
+        src={currentProduct.image || "/placeholder-product.png"}
+        alt={currentProduct.name}
+        className="w-full h-64 object-cover rounded-lg"
+      />
+      <h1 className="text-2xl font-bold mt-4">{currentProduct.name}</h1>
+      <p className="text-lg mt-1">KSh {currentProduct.price}</p>
+
+      {/* Add to Cart */}
+      <button
+        onClick={() => onAddToCart(currentProduct)}
+        className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg"
+      >
+        Add to Cart
+      </button>
+
+      {/* Average Rating */}
+      {currentProduct.ratings?.count > 0 && (
+        <p className="mt-2">
+          ⭐ Average: {getAverageRating(currentProduct)} / 5 ({currentProduct.ratings.count} ratings)
+        </p>
+      )}
+
+      {/* Reviews */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">Reviews</h2>
+        {currentProduct.reviews?.length > 0 ? (
+          <ul className="mt-2 space-y-2">
+            {currentProduct.reviews.map((r, i) => (
+              <li key={i} className="border p-2 rounded">
+                <p className="font-semibold">{r.user} ⭐ {r.stars}</p>
+                <p>{r.text}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-2 text-gray-500">No reviews yet.</p>
+        )}
       </div>
+
+      {/* Leave a Review (only if user purchased) */}
+      {userHasPurchased && (
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold">Leave a Review</h2>
+
+          {/* Star Rating */}
+          <div className="flex gap-2 mt-2">
+            {[1,2,3,4,5].map((s) => (
+              <button
+                key={s}
+                onClick={() => setNewStars(s)}
+                className={`px-2 py-1 rounded ${newStars === s ? "bg-yellow-400" : "bg-gray-200"}`}
+              >
+                {s} ⭐
+              </button>
+            ))}
+          </div>
+
+          <textarea
+            value={newText}
+            onChange={(e) => setNewText(e.target.value)}
+            placeholder="Write your review..."
+            className="w-full border rounded p-2 mt-2"
+          />
+
+          <button
+            onClick={handleSubmit}
+            className="mt-2 px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Submit Review
+          </button>
+        </div>
+      )}
+
+      {/* Message if user has not purchased */}
+      {!userHasPurchased && (
+        <p className="mt-4 text-red-500">You must purchase this product to leave a review.</p>
+      )}
     </div>
   );
 }

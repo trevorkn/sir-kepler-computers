@@ -1,7 +1,9 @@
 import React from "react";
 import ProductCard from "../components/ProductCard";
 import products from "../data/products";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+import Hero from "../components/Hero";
+import FlashSale from "../components/FlashSale";
 
     
 export default function Home() {
@@ -24,6 +26,8 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4">
+      <Hero />
+      <FlashSale />
       <h1 className="mb-6 text-2xl font-bold text-left">Featured Products</h1>
       
       {/* Small categories */}
