@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import shoppingCart from '../assets/landingPagepics/shopping.json'
 import Lottie from 'lottie-react';
 import HoverLottie from '../assets/HoverLottie';
+import { useAuth } from '../contexts/AuthContext';
+import UserAvator from '../components/UserAvator';
 
 export default function LandingPage() {
+    const { user } = useAuth();
 
 
 return (
@@ -12,7 +15,7 @@ return (
        <div className='flex justify-between items-center w-full p-3'> 
     <div className=''>
  <img
-    src="public/sirkeplogo.jpg"
+    src="/sirkeplogo.jpg"
         className='h-20 pl-20'
         ></img>
   </div>
@@ -20,7 +23,14 @@ return (
         {/* Top Navigation */}
      <header className='flex justify-end space-x-6 w-full p-6  text-sm pr-20'>
         <Link to="/Store" className=" text-1xl font-medium ">Visit Store</Link>
-        <Link to="/login" className='text-1xl'>Login</Link>
+    
+    {/* Show UserAvator if logged in, otherwise show login link */}
+    {user ? (
+        <UserAvator user={user} />
+    ) : (
+    <Link to="/login" className='text-1xl'>Login</Link>    
+    
+    )}
      </header>
   
    </div>
@@ -164,7 +174,7 @@ className='flex justify-center'
 </div>
     </div>
 
-   // 
+
    
 )
 }

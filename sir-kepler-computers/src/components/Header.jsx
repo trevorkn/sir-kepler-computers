@@ -3,6 +3,8 @@ import React, {useState} from 'react';
 import { useSearchStore } from '../stores/searchStore';
 import { useCartStore } from '../stores/cartStore';
 import MobileMenu from './MobileMenu'
+import { useAuth } from '../contexts/AuthContext';
+import UserAvator from './UserAvator';
 
 
 
@@ -10,6 +12,7 @@ import MobileMenu from './MobileMenu'
 const Header = () => {
     const { searchTerm, setSearchTerm, addSearchHistory, searchHistory } = useSearchStore();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
         const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -82,9 +85,15 @@ const Header = () => {
                   </div>
               
                     {/* Right Side: login*/}
-                    
+                    {/* Show UserAvatar if logged in, otherwise show Login link */}
+                    {user ? (
+                        <UserAvator user={user} />
+                    ) : (
+                        <Link to="/login" className='text-1xl hover:underline cursor-pointer'>Login</Link>
+                    )
+                }
                 
-                <button className="text-sm hover:underline  cursor-pointer">Login</button>
+                
                </div>
                
                 {/*Bottom part- navigation links*/}
