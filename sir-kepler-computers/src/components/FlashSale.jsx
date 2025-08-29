@@ -9,9 +9,9 @@ import useCountdownToMidnight from './Timer'
 
 const flashSaleData = [
     {id: 1, flashPrice: 13500 },
-    {id: 2, flashPrice: 22000 },
-    {id: 3, flashPrice: 20000 },
-    {id: 4, flashPrice: 28000 },
+    {id: 2, flashPrice: 20000 },
+    {id: 3, flashPrice: 25000 },
+    {id: 4, flashPrice: 15000 },
 ];
 
 const FlashSale = () => {
