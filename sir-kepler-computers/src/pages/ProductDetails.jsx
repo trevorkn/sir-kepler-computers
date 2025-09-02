@@ -1,114 +1,125 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import products from "../data/products";
-import { addReview, getAverageRating } from "../utils/ratingUtils";
+import { getAverageRating } from "../utils/ratingUtils";
 
-export default function ProductDetails({ productId, loggedInUserId, onAddToCart }) {
-  // Find product by ID (make sure ID is number)
+export default function ProductDetails({ productId, onAddToCart }) {
   const product = products.find((p) => p.id === Number(productId));
 
-  // Fallback if product not found
   if (!product) {
     return <p className="p-4 text-red-500">Product not found.</p>;
   }
 
+  // Use state so you can update product info dynamically in the future
   const [currentProduct, setCurrentProduct] = useState(product);
-  const [newStars, setNewStars] = useState(0);
-  const [newText, setNewText] = useState("");
+  const [mainImage, setMainImage] = useState(product.images[0]);
+  const [added, setAdded] = useState(false);
 
-  // Mock function: check if user bought this product
-  // Replace with real logic or API call
-  const userHasPurchased = product.purchasedBy?.includes(loggedInUserId);
-
-  const handleSubmit = () => {
-    if (newStars === 0 || newText.trim() === "" || !userHasPurchased) return;
-
-    const updated = addReview(currentProduct, newStars, newText, `User-${loggedInUserId}`);
-    setCurrentProduct(updated);
-    setNewStars(0);
-    setNewText("");
+  const handleAddToCart = () => {
+    onAddToCart(currentProduct);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto text-left">
-      {/* Product Info */}
+    <div className="p-6 max-w-5xl mx-auto">
+
+      {/* Product Images */}
+      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex-1">
       <img
-        src={currentProduct.image || "/placeholder-product.png"}
+        src={mainImage}
         alt={currentProduct.name}
-        className="w-full h-64 object-cover rounded-lg"
+        className="w-80 h-80 object-cover rounded-lg"
       />
+      {currentProduct.images.length > 1 && (
+        <div className="flex gap-2 mt-2 overflow-x-auto">
+          {currentProduct.images.map((img, idx) => (
+            <img
+              key={idx}
+              src={img}
+              alt={`${currentProduct.name} ${idx + 1}`}
+              className="w-20 h-20 object-cover rounded cursor-pointer border"
+              onClick={() => setMainImage(img)}
+            />
+          ))}
+        </div>
+      )}
+     </div>
+     
+      {/* Product Info */}
+      <div className="flex-1 text-left">
       <h1 className="text-2xl font-bold mt-4">{currentProduct.name}</h1>
       <p className="text-lg mt-1">KSh {currentProduct.price}</p>
+      <p className={`mt-2 font-semibold ${currentProduct.inStock ? "text-green-600" : "text-red-600"}`}>
+        {currentProduct.inStock ? "in Stock" : "Out of Stock"}
+      </p>
 
       {/* Add to Cart */}
       <button
-        onClick={() => onAddToCart(currentProduct)}
-        className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg"
+        onClick={handleAddToCart}
+        disabled={added || !currentProduct.inStock}
+        className={`mt-3 px-4 py-2 rounded-lg text-white ${
+          !currentProduct.inStock
+          ? "bg-gray-400 cursor-not-allowed"
+          : added
+          ? "bg-green-500" : "bg-blue-600 hover:bg-blue-700"
+        }`}
       >
-        Add to Cart
+        {currentProduct.inStock ? (added ? "Added!" : "Add to Cart") : "Out of Stock"}
       </button>
 
       {/* Average Rating */}
       {currentProduct.ratings?.count > 0 && (
         <p className="mt-2">
-          ⭐ Average: {getAverageRating(currentProduct)} / 5 ({currentProduct.ratings.count} ratings)
+          ⭐ Average: {getAverageRating(currentProduct)} / 5 (
+          {currentProduct.ratings.count} ratings)
         </p>
       )}
+        </div>
+        <div></div>
+        </div>
 
-      {/* Reviews */}
+        {/* Features Section */}
+        {currentProduct.features?.length > 0 && (
+          <div className="mt-6 flex justify-start">
+            <div className="ml-4 max-w-md">
+            <h2 className="text-lg font-semibold mb-2">Features:</h2>
+            <ul className="list-disc list-inside space-y-1">
+              {currentProduct.features.map((feature, idx) => (
+                <li key={idx}>{feature}</li>
+              ))}
+            </ul>
+              </div>
+            </div>
+        )}
+      {/* Reviews Preview */}
       <div className="mt-6">
         <h2 className="text-xl font-semibold">Reviews</h2>
         {currentProduct.reviews?.length > 0 ? (
-          <ul className="mt-2 space-y-2">
-            {currentProduct.reviews.map((r, i) => (
-              <li key={i} className="border p-2 rounded">
-                <p className="font-semibold">{r.user} ⭐ {r.stars}</p>
-                <p>{r.text}</p>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-2 space-y-2">
+              {currentProduct.reviews.slice(0, 3).map((r, i) => (
+                <li key={i} className="border p-2 rounded">
+                  <p className="font-semibold">{r.user} ⭐ {r.stars}</p>
+                  <p>{r.text}</p>
+                </li>
+              ))}
+            </ul>
+
+            {currentProduct.reviews.length > 3 && (
+              <Link
+                to={`/product/${currentProduct.id}/reviews`}
+                className="mt-3 inline-block px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800"
+              >
+                See All Reviews
+              </Link>
+            )}
+          </>
         ) : (
           <p className="mt-2 text-gray-500">No reviews yet.</p>
         )}
       </div>
-
-      {/* Leave a Review (only if user purchased) */}
-      {userHasPurchased && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold">Leave a Review</h2>
-
-          {/* Star Rating */}
-          <div className="flex gap-2 mt-2">
-            {[1,2,3,4,5].map((s) => (
-              <button
-                key={s}
-                onClick={() => setNewStars(s)}
-                className={`px-2 py-1 rounded ${newStars === s ? "bg-yellow-400" : "bg-gray-200"}`}
-              >
-                {s} ⭐
-              </button>
-            ))}
-          </div>
-
-          <textarea
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-            placeholder="Write your review..."
-            className="w-full border rounded p-2 mt-2"
-          />
-
-          <button
-            onClick={handleSubmit}
-            className="mt-2 px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Submit Review
-          </button>
-        </div>
-      )}
-
-      {/* Message if user has not purchased */}
-      {!userHasPurchased && (
-        <p className="mt-4 text-red-500">You must purchase this product to leave a review.</p>
-      )}
     </div>
   );
 }
