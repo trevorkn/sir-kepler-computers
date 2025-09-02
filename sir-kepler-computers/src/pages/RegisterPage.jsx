@@ -1,11 +1,12 @@
 // src/pages/RegisterPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, storage } from '../firebase'
+
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { FiPlus } from 'react-icons/fi';
-
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { db , auth, storage} from "../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -17,13 +18,34 @@ export default function RegisterPage() {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const navigate = useNavigate();
 
+  //clean preview URL
+     useEffect(() => {
+      return () => {
+        if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+      };
+     }, [avatarPreview]);
+      
    const handleAvatarChange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
       setAvatarFile(file);
       setAvatarPreview(URL.createObjectURL(file)); // preview image
     }; 
-
+    
+    const getFriendlyError = (code) => {
+      switch (code) {
+        case "auth/email-already-in-use":
+          return "This email is already registered. Try loggin in";
+        case "auth/invalid-email":
+          return "Please enter a valid email address.";
+        case "auth/weak-password":
+          return "Password is too weak. Use at least 6 characters";
+          case "auth/network-request-failed":
+            return "Network error. Please check your connection";
+            default:
+              return "Something went wrong. Please try again.";
+      }
+    };
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
@@ -52,11 +74,19 @@ export default function RegisterPage() {
               photoURL: photoURL || null,
             });
 
+            await setDoc(doc(db, "users", user.uid), {
+              uid: user.uid,
+              displayName: name,
+              email: user.email,
+              photoURL: photoURL || null,
+              createdAt: serverTimestamp(),
+            });
+
         //AuthContext will automatically pick up the new user
         navigate('/store'); // redirect after successful registration
     } catch (err) {
         console.error(err.message);
-        setError(err.message); // show Firebase error (like email already in use) 
+        setError(getFriendlyError(err.code)); // show Firebase error (like email already in use) 
     }
     };
     
