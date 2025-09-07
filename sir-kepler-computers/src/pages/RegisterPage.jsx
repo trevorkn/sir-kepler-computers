@@ -78,6 +78,8 @@ export default function RegisterPage() {
               uid: user.uid,
               displayName: name,
               email: user.email,
+              role: "customer",
+              isActive: true,
               photoURL: photoURL || null,
               createdAt: serverTimestamp(),
             });

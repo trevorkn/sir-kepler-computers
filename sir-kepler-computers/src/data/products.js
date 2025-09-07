@@ -2,6 +2,7 @@ const products = [
   {
     id: 1,
     name: "HP EliteBook 840 G1",
+    sku: "HP840G1",
     price: 15000,
     oldPrice: 18000,
     category: "Laptops",
@@ -23,11 +24,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: true,
     purchasedBy: []
   },
   {
     id: 2,
     name: "HP EliteBook 840 G3",
+    sku: "HP840G3",
     price: 22000, // from txt file
     oldPrice: null,
     category: "Laptops",
@@ -44,11 +47,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: false,
     purchasedBy: []
   },
   {
     id: 3,
     name: "HP EliteBook 840 G6",
+    sku: "HP840G6",
     price: 33000, // from txt file
     oldPrice: null,
     category: "Laptops",
@@ -71,11 +76,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: false,
     purchasedBy: []
   },
   {
     id: 4,
     name: "HP EliteBook 820 G1",
+    sku: "HP820G1",
     price: 18000,
     oldPrice: null,
     category: "Laptops",
@@ -92,11 +99,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: false,
     purchasedBy: []
   },
   {
     id: 5,
     name: "HP EliteBook 820 G3",
+    sku: "HP820G3",
     price: 20000,
     oldPrice: null,
     category: "Laptops",
@@ -113,11 +122,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: true,
     purchasedBy: []
   },
   {
     id: 6,
     name: "HP EliteBook 830 G5",
+    sku: "HP830G5",
     price: 28000,
     oldPrice: null,
     category: "Laptops",
@@ -134,11 +145,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured:false,
     purchasedBy: []
   },
   {
     id: 7,
     name: "HP EliteBook 830 G6",
+    sku: "HP830G6",
     price: 30000,
     oldPrice: null,
     category: "Laptops",
@@ -155,11 +168,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: false,
     purchasedBy: []
   },
   {
     id: 8,
     name: "HP EliteBook 8570p",
+    sku: "HP8570P",
     price: 15000,
     oldPrice: null,
     category: "Laptops",
@@ -179,11 +194,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: true,
     purchasedBy: []
   },
   {
     id: 9,
     name: "HP EliteBook x360 830 G7",
+    sku: "HPx360G7",
     price: 30000,
     oldPrice: 33000,
     category: "Laptops",
@@ -202,11 +219,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: true,
     purchasedBy: []
   },
   {
     id: 10,
     name: "HP EliteBook 1040 G7",
+    sku: "HP1040G7",
     price: 62000,
     oldPrice: null,
     category: "Laptops",
@@ -224,11 +243,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: false,
     purchasedBy: []
   },
   {
     id: 11,
     name: "HP EliteBook 1040 G8",
+    sku: "HP1040G8",
     price: 62000,
     oldPrice: null,
     category: "Laptops",
@@ -249,11 +270,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: true,
     purchasedBy: []
   },
   {
   id: 12,
   name: "HP Dragonfly",
+  sku: "HPDRGFLY",
   price: 80000,
   oldPrice: null,
   category: "Laptops",
@@ -272,11 +295,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 13,
   name: "HP Envy x360",
+  sku: "HPENX360",
   price: 25000,
   oldPrice: 28000,
   category: "Laptops",
@@ -298,11 +323,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
  {
   id: 14,
   name: "Dell Latitude 5440",
+  sku: "DL5440",
   price: 25000,
   oldPrice: null,
   category: "Laptops",
@@ -320,11 +347,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: true,
   purchasedBy: []
 },
 {
   id: 15,
   name: "Dell Latitude 7280",
+  sku: "DL7280",
   price: 28000,
   oldPrice: null,
   category: "Laptops",
@@ -342,11 +371,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 16,
   name: "Dell Latitude E7470",
+  sku: "DLE7470",
   price: 30000,
   oldPrice: null,
   category: "Laptops",
@@ -364,11 +395,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 17,
   name: "MacBook Air 2015",
+  sku: "MBA015",
   price: 40000,
   oldPrice: null,
   category: "Laptops",
@@ -386,11 +419,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 18,
   name: "MacBook Pro 13 2015",
+  sku: "MBP13015",
   price: 50000,
   oldPrice: null,
   category: "Laptops",
@@ -408,11 +443,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 19,
   name: "Lenovo ThinkPad L460",
+  sku: "THL460",
   price: 22000,
   oldPrice: null,
   category: "Laptops",
@@ -433,11 +470,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 20,
   name: "Lenovo ThinkPad X260",
+  sku: "THLX260",
   price: 24000,
   oldPrice: null,
   category: "Laptops",
@@ -456,11 +495,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 21,
   name: "Lenovo ThinkPad X280",
+  sku: "THX280",
   price: 26000,
   oldPrice: null,
   category: "Laptops",
@@ -478,11 +519,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 22,
   name: "Lenovo ThinkPad Yoga 11e",
+  sku: "THY11E",
   price: 28000,
   oldPrice: null,
   category: "Laptops",
@@ -501,11 +544,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
   id: 23,
   name: "Lenovo ThinkPad Yoga 370",
+  sku: "THY370",
   price: 35000,
   oldPrice: null,
   category: "Laptops",
@@ -524,11 +569,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
     id: 24,
     name: "Dell Tower",
+    sku: "DLTWR001",
     price: 35000,
     oldPrice: null,
     category: "Desktops",
@@ -545,11 +592,13 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0 },
     reviews: [],
+    featured: false,
     purchasedBy: []
 },
 {
     id: 25,
      name: "Dell Vostro",
+     sku: "DLVSTRO2",
   price: 32000,
   oldPrice: null,
   category: "Desktops",
@@ -567,11 +616,13 @@ const products = [
   ],
   ratings: { totalScore: 0, count: 0 },
   reviews: [],
+  featured: false,
   purchasedBy: []
 },
 {
     id: 26,
     name: "HP ELiteDesk 600 G3",
+    sku: "HP600G3D",
     price: 33000,
     oldPrice: null,
     category: "Desktops",
@@ -589,8 +640,231 @@ const products = [
     ],
     ratings: { totalScore: 0, count: 0},
     reviews: [],
+    featured: true,
     purchasedBy: []
+},
+{
+  id: 27,
+  name: "Bag",
+  sku: "ACC001",
+  price: 2500,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/Bag.jpeg"
+  ],
+  features: [
+    "Durable material",
+    "Multiple compartments",
+    "Universal laptop fit"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 28,
+  name: "Crucial SSD",
+  sku: "ACC002",
+  price: 8000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/Crucialssd.jpeg"
+  ],
+  features: [
+    "500GB Storage",
+    "SATA III",
+    "High-speed performance"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 29,
+  name: "Laptop Screens",
+  sku: "ACC003",
+  price: 15000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/Laptopscreens.jpeg"
+  ],
+  features: [
+    "Compatible with multiple models",
+    "FHD resolution",
+    "Easy replacement"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 30,
+  name: "RAM Stick 8GB",
+  sku: "ACC004",
+  price: 6000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/RAM.jpeg"
+  ],
+  features: [
+    "8GB DDR4 RAM",
+    "3200MHz speed",
+    "Plug-and-play"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 31,
+  name: "RAM Stick 16GB",
+  sku: "ACC005",
+  price: 12000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/Ram.jpeg"
+  ],
+  features: [
+    "16GB DDR4 RAM",
+    "3200MHz speed",
+    "Plug-and-play"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 32,
+  name: "Universal Cleaner",
+  sku: "ACC006",
+  price: 2000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/Universalcleaner.jpeg"
+  ],
+  features: [
+    "Safe for all devices",
+    "Non-toxic",
+    "Easy application"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 33,
+  name: "M.2 SSD",
+  sku: "ACC007",
+  price: 10000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/m.2ssd's.jpeg"
+  ],
+  features: [
+    "250GB Storage",
+    "NVMe interface",
+    "High-speed read/write"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 34,
+  name: "Motherboard",
+  sku: "ACC008",
+  price: 15000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/motherboard.jpeg"
+  ],
+  features: [
+    "ATX Form Factor",
+    "Supports latest CPUs",
+    "High durability"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 35,
+  name: "Portable Android Projector",
+  sku: "ACC009",
+  price: 25000,
+  oldPrice: null,
+  category: "Accessories",
+  condition: "New",
+  inStock: true,
+  images: [
+    "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Accessories/portableandroidprojectors.jpeg"
+  ],
+  features: [
+    "HD Projection",
+    "Built-in Android OS",
+    "Compact and portable"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
+},
+{
+  id: 36,
+  name: "HP Monitor",
+  sku: "MON001",
+  price: 12000,
+  oldPrice: null,
+  category: "Monitors",
+  condition: "New",
+  inStock: true,
+  images: [
+   "https://storage.googleapis.com/sir-kepler-computers.firebasestorage.app/Monitors/HP/HPmonitor/WhatsApp%20Image%202025-08-23%20at%205.38.29%20PM.jpeg"
+  ],
+  features: [
+    "24-inch FHD Screen",
+    "IPS Panel",
+    "75Hz Refresh Rate",
+    "HDMI & VGA Ports"
+  ],
+  ratings: { totalScore: 0, count: 0 },
+  reviews: [],
+  featured: false,
+  purchasedBy: []
 }
+
 
 ];
 
