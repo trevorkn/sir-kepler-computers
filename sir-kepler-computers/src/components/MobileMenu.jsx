@@ -7,7 +7,7 @@ const MobileMenu = ({ isOpen }) => {
     if (!isOpen) return null;
 
     return (
-        <div className=' bg-white border shadow-md absolute top-full left-0 w-full md:w-auto'>
+        <div className=' bg-white border shadow-md absolute top-full left-0 w-full md:w-auto z-50'>
             <div className='flex flex-col p-4 space-y-2 text-sm'>
 
                 {/* Categories */}
@@ -38,13 +38,6 @@ const MobileMenu = ({ isOpen }) => {
                         <Link to="/store/accessories" className='block'>
                         </Link>
                     </div>
-                
-            <Link to="/flash-sale" className="block">
-            Flash Sale
-            </Link>
-            <Link to="/favorites" className='block'>
-            Favorites
-            </Link>
 
             {/* Utilities */}
             <button

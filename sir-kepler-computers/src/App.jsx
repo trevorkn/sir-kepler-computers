@@ -10,13 +10,15 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage'
 import Footer from './components/Footer';
+import StorePage from './pages/StorePage';
+import Favorites from './pages/Favorites';
 
 
 const ProductDetailsWrapper = ({ loggedInUserId, onAddToCart}) => {
   const  { productId } = useParams();
   return (
     <ProductDetails
-         productId={Number(productId)}
+         productId={productId}
          loggedInUserId={loggedInUserId}
          onAddToCart={onAddToCart}
          />
@@ -55,6 +57,9 @@ const App = () => {
                 {/* Pages with Header */}
         <Route element={< LayoutWIthHeader />}>
 
+        {/* filter */}
+        <Route path="/store/:category" element={<StorePage />} />
+
         
 
       {/* Homepage with Hero + FlashSale + Products */}
@@ -74,9 +79,12 @@ const App = () => {
      <ProductDetailsWrapper
      loggedInUserId={loggedInUserId}
      onAddToCart={handleAddToCart}
-     />}
+     />
+   }
    />
+   <Route path='/favorites' element={<Favorites />} />
    </Route>
+   
    </Routes>
    </div>
 

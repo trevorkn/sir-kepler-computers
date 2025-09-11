@@ -84,6 +84,21 @@ export default function RegisterPage() {
               createdAt: serverTimestamp(),
             });
 
+            // ---create empty wishlist for the user ---
+            await setDoc(doc(db, "wishlists", user.uid), {
+              items: [], //empty wishlist initially
+            });
+
+            //create empty cart
+            await setDoc(doc(db, "carts", user.uid), {
+              items: [] ,
+            });
+            
+            //create empty recently viewed
+            await setDoc(doc(db, "recentlyViewed", user.uid), {
+               items: [], 
+              });
+
         //AuthContext will automatically pick up the new user
         navigate('/store'); // redirect after successful registration
     } catch (err) {

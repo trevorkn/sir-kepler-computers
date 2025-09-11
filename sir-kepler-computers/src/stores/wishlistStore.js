@@ -16,4 +16,5 @@ export const useWishlistStore = create((set) => ({
             set((state) => ({
                 wishlist: state.wishlist.filter((p) => p.id !== id),
             })),
+            setWishlist: (products) => set({ wishlist: products }),
 }));

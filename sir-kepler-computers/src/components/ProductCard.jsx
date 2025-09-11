@@ -1,8 +1,16 @@
+// TODO: Add visual feedback for wishlist button when updating
+// - Disable button temporarily using `disabled`
+// - Add styles like opacity-50 and cursor-not-allowed
+// - Maybe show a spinner while updating
+
+
 import React, { useState } from 'react';
 import { Link } from "react-router-dom"
 import { useCartStore } from '../stores/cartStore';
 import { Heart} from "lucide-react";
 import { useWishlistStore } from '../stores/wishlistStore';
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 
 const formatPrice = (num, currency = "KSh") => {
@@ -14,6 +22,7 @@ const formatPrice = (num, currency = "KSh") => {
     const { id, name, price, category, images = [] } = product || {};
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [updatingWishlist, setUpdatingWishlist] = useState(false);
     const currentImage = images[currentImageIndex] || "/placeholder-product.png";
 
     const prevImage =() => {
@@ -41,12 +50,32 @@ const formatPrice = (num, currency = "KSh") => {
 
         const inWishlist = wishlist.some((p) => p.id === id);
 
-        const toggleWishlist = () => {
+        const toggleWishlist = async () => {
+          const user = auth.currentUser;
+          if (!user) return alert("Please log in to use wishlist");
+
+          if (updatingWishlist) return;// prevent double clicks
+          setUpdatingWishlist(true);
+
+          const userRef = doc(db, "users", user.uid);
+          try {
             if (inWishlist) {
                 removeFromWishlist(id);
+                await updateDoc(userRef, {
+                  favorites: arrayRemove(id),
+                });
             } else {
                 addToWishlist(product);
+                await updateDoc(userRef, {
+                  favorites: arrayUnion(id),
+                });
             }
+          } catch (err) {
+            console.error("Failed to update wishlist:", err);
+            alert("Error updating wishlist. Please try again.");
+          } finally {
+            setUpdatingWishlist(false);
+          }
         };
         
     return (
