@@ -1,5 +1,5 @@
 // src/components/UserAvatar.jsx
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { User, Heart, Package, LogOut } from "lucide-react";
 import { signOut } from "firebase/auth";
@@ -15,6 +15,7 @@ export default function UserAvatar({ user }) {
     : "?";
 
   const wishlist = useWishlistStore((state) => state.wishlist);
+  const loading = useWishlistStore((state) => state.loading);
 
   // Close menu on outside click
   useEffect(() => {
@@ -76,11 +77,14 @@ export default function UserAvatar({ user }) {
             <div className="flex items-center gap-2 relative w-full">
               <Heart size={18} />
               <span>Favorites</span>
-              {wishlist.length > 0 && (
+
+              {loading ? (
+                <span className="absolute -top-2 -right-2 text-xs animate-pulse">...</span>
+              ) : wishlist.length > 0 ? (
                 <span className="absolute -top-2 -right-2 rounded-full bg-red-500 text-white text-xs px-2 py-0.5">
                   {wishlist.length}
                 </span>
-              )}
+              ): null}
             </div>
           </Link>
 

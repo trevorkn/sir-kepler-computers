@@ -58,7 +58,8 @@ const App = () => {
         <Route element={< LayoutWIthHeader />}>
 
         {/* filter */}
-        <Route path="/store/:category" element={<StorePage />} />
+        <Route path="/store/:category" element={<CategoryPage onAddToCart={handleAddToCart} />} />
+        <Route path="/store/:category/:brand" element={<CategoryPage onAddToCart={handleAddToCart} />} />
 
         
 

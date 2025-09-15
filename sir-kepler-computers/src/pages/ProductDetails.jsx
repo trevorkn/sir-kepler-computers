@@ -1,25 +1,66 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import products from "../data/products";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { db } from "../firebase";
+import { doc, getDocs, collection, where, query, getDoc } from "firebase/firestore";
 import { getAverageRating } from "../utils/ratingUtils";
 
-export default function ProductDetails({ productId, onAddToCart }) {
-  const product = products.find((p) => p.id === Number(productId));
-
-  if (!product) {
-    return <p className="p-4 text-red-500">Product not found.</p>;
-  }
-
-  // Use state so you can update product info dynamically in the future
-  const [currentProduct, setCurrentProduct] = useState(product);
-  const [mainImage, setMainImage] = useState(product.images[0]);
+export default function ProductDetails({ onAddToCart }) {
+  const { productId } = useParams(); // gets product id from url
+  const [currentProduct, setCurrentProduct] = useState(null);
+  const [mainImage, setMainImage] = useState("");
+  const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
 
+
+useEffect(() => {
+  async function fetchProduct() {
+    try {
+      setLoading(true);
+
+      // Convert productId from URL (string) to number
+      const numericId = Number(productId);
+
+      // Query Firestore where "id" matches the numeric value
+      const q = query(
+        collection(db, "products"),
+        where("id", "==", numericId)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.docs.length > 0) {
+        const docSnap = querySnapshot.docs[0];
+        const data = docSnap.data();
+        setCurrentProduct({ id: docSnap.id, ...data });
+        setMainImage(data.images?.[0] || "");
+      } else {
+        setCurrentProduct(null);
+      }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      setCurrentProduct(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (productId) fetchProduct();
+}, [productId]);
+
+
   const handleAddToCart = () => {
+    if(!currentProduct) return;
     onAddToCart(currentProduct);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
+
+  if (loading) {
+    return <p className="p-4 text-center">Loading product details...</p>
+  }
+  if(!currentProduct) {
+    return <p className="p-4 text-red-500">Product not found</p>
+  }
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -32,7 +73,7 @@ export default function ProductDetails({ productId, onAddToCart }) {
         alt={currentProduct.name}
         className="w-80 h-80 object-cover rounded-lg"
       />
-      {currentProduct.images.length > 1 && (
+      {currentProduct.images?.length > 1 && (
         <div className="flex gap-2 mt-2 overflow-x-auto">
           {currentProduct.images.map((img, idx) => (
             <img
