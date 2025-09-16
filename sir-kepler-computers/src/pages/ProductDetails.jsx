@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDocs, collection, where, query, getDoc } from "firebase/firestore";
 import { getAverageRating } from "../utils/ratingUtils";
+import { useCartStore } from "../stores/cartStore";
 
 export default function ProductDetails({ onAddToCart }) {
   const { productId } = useParams(); // gets product id from url
@@ -11,6 +12,8 @@ export default function ProductDetails({ onAddToCart }) {
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
 
+  const addToCart = useCartStore((state) => state.addToCart);
+  const [quantity, setQuantity] = useState(1);
 
 useEffect(() => {
   async function fetchProduct() {
@@ -48,10 +51,11 @@ useEffect(() => {
 }, [productId]);
 
 
-  const handleAddToCart = () => {
+  const handleAddToCart =async () => {
     if(!currentProduct) return;
-    onAddToCart(currentProduct);
+    await addToCart(currentProduct, quantity);
     setAdded(true);
+    setQuantity(1);
     setTimeout(() => setAdded(false), 1500);
   };
 
@@ -96,6 +100,24 @@ useEffect(() => {
         {currentProduct.inStock ? "in Stock" : "Out of Stock"}
       </p>
 
+      {/* Quantity selector */}
+      {currentProduct.inStock && (
+        <div className="mt-3 flex items-center gap-2">
+          <button
+           className="px-3 py-1 border rounded"
+           onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+           >
+            -
+           </button>
+           <span className="px-2">{quantity}</span>
+           <button
+            className="px-3 py-1 border rounded"
+            onClick={() => setQuantity((q) => q + 1)}
+            >
+              +
+            </button>
+            </div>
+      )}
       {/* Add to Cart */}
       <button
         onClick={handleAddToCart}

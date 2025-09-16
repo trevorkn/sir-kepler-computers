@@ -23,12 +23,19 @@ const formatPrice = (num, currency = "KSh") => {
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [updatingWishlist, setUpdatingWishlist] = useState(false);
+    const [added, setAdded] = useState(false);
     const currentImage = images[currentImageIndex] || "/placeholder-product.png";
 
     const prevImage =() => {
         setCurrentImageIndex(
             (currentImageIndex - 1 + images.length) % images.length
         );
+    };
+
+    const handleAddToCart = async() => {
+      await addToCart(product);
+      setAdded(true);
+       setTimeout(() => setAdded(false), 1500);
     };
 
     const nextImage = () => {
@@ -162,12 +169,15 @@ const formatPrice = (num, currency = "KSh") => {
 
     <button
       type="button"
-      onClick={() => addToCart(product)}
-      className="rounded-xl border px-3 py-2 text-sm hover:bg-gray-50"
+      onClick={handleAddToCart}
+      disabled={added}
+      className={`rounded-xl border px-3 py-2 text-sm transition-colors ${
+      added ? "bg-green-500 text-white" : "hover:bg-gray-50"
+    }`}
       aria-label={`Add ${name} to cart`}
       title="Add to cart"
     >
-      🛒
+      {added ? "Added!" :"🛒"}
     </button>
   </div>
 </div>

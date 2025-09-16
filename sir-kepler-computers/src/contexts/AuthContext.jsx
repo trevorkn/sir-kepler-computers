@@ -2,11 +2,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useWishlistStore } from "../stores/wishlistStore";
+import { useCartStore } from "../stores/cartStore";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const refreshWishlist = useWishlistStore((state) => state.refreshWishlist);
+    const fetchCart = useCartStore((state) => state.fetchCart);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -18,11 +20,12 @@ export const AuthProvider = ({ children }) => {
 
             if (currentUser) {
                 await refreshWishlist();
+                await fetchCart();
             }
         });
 
         return () => unsubscribe();
-        }, [refreshWishlist]);
+        }, [refreshWishlist, fetchCart]);
 
         const logout = async () => {
             await signOut(auth);

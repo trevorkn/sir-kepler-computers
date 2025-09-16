@@ -1,9 +1,9 @@
 # Sir Kepler Project Roadmap (Updated)
 
 ## Phase 1: Firestore Migration (High Priority)
-- Replace `products.js` with live Firestore data
-  - Update Product Lists, Latest Arrivals, Featured Products, Random Items
-  - Ensure Product Details pages read from Firestore
+~~- Replace `products.js` with live Firestore data~~
+ ~~ - Update Product Lists, Latest Arrivals, Featured Products, Random Items~~
+  ~~- Ensure Product Details pages read from Firestore~~
   - Update search and filter logic to work with Firestore
 
 ## Phase 2: Cart & Product Details
