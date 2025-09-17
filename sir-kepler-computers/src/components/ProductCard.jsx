@@ -33,7 +33,10 @@ const formatPrice = (num, currency = "KSh") => {
     };
 
     const handleAddToCart = async() => {
-      await addToCart(product);
+      await addToCart({
+        ...product,
+          images: product.images || []
+      });
       setAdded(true);
        setTimeout(() => setAdded(false), 1500);
     };

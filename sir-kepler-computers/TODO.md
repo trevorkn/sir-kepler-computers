@@ -7,13 +7,13 @@
   - Update search and filter logic to work with Firestore
 
 ## Phase 2: Cart & Product Details
-- Improve `cartStore` functionality
-  - Add quantity selector for single products
-  - Update cart totals dynamically
-  - Sync with Firestore (optional for cross-device persistence)
+~~- Improve `cartStore` functionality~~
+~~  - Add quantity selector for single products~~
+ ~~ - Update cart totals dynamically~~
+ ~~ - Sync with Firestore (optional for cross-device persistence)~~
 - Enhance Product Details page
   - Add more product info (features, shipping details)
-  - Allow multiple quantities per product
+ ~~ - Allow multiple quantities per product~~
   - Add “Add to Cart” and “Wishlist” enhancements
 - Prepare groundwork for checkout/payment flow
 

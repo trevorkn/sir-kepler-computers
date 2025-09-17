@@ -12,6 +12,7 @@ import RegisterPage from './pages/RegisterPage'
 import Footer from './components/Footer';
 import StorePage from './pages/StorePage';
 import Favorites from './pages/Favorites';
+import CartPage from "./pages/CartPage";
 
 
 const ProductDetailsWrapper = ({ loggedInUserId, onAddToCart}) => {
@@ -84,6 +85,7 @@ const App = () => {
    }
    />
    <Route path='/favorites' element={<Favorites />} />
+   <Route path="/cart" element={<CartPage />} />
    </Route>
    
    </Routes>

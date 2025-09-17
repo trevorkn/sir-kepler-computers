@@ -11,7 +11,12 @@ export const useCartStore = create((set, get) => ({
 
         const currentCart = get().cart;
         const existingIndex = currentCart.findIndex((p) => p.id === product.id);
-
+        
+        const imageURL = 
+           product.images?.[0] ||
+           product.imageURL ||
+           "/placeholder-product.png";
+           
             let newCart;
             if (existingIndex >=0) {
                 //if product exists, update it's quantity
@@ -22,7 +27,16 @@ export const useCartStore = create((set, get) => ({
                 };
             } else {
                 // otherwise, add new product with initial quantity
-                newCart = [...currentCart, { ...product, quantity }];
+                newCart = [
+                    ...currentCart,
+                     { 
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        quantity,
+                        imageURL,
+                    },
+                ];
 
             }
                 console.log("🛒 New cart before updating Firestore:", newCart);
