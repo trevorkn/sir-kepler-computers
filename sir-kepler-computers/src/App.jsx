@@ -3,7 +3,7 @@ import './App.css'
 import Header from './components/Header'
 import SearchResults from './components/SearchResults';
 import Home from './pages/Home';
-import { Routes, Route, useParams, Outlet } from 'react-router-dom';
+import { Routes, Route, useParams, Outlet, Navigate } from 'react-router-dom';
 import CategoryPage from './pages/CategoryPage';
 import ProductDetails from './pages/ProductDetails';
 import LandingPage from './pages/LandingPage';
@@ -13,6 +13,8 @@ import Footer from './components/Footer';
 import StorePage from './pages/StorePage';
 import Favorites from './pages/Favorites';
 import CartPage from "./pages/CartPage";
+import RecentlyViewed from './pages/RecentlyViewed';
+import { useAuth } from './contexts/AuthContext';
 
 
 const ProductDetailsWrapper = ({ loggedInUserId, onAddToCart}) => {
@@ -35,6 +37,7 @@ const LayoutWIthHeader = () => (
   </div>
 )
 const App = () => {
+  const { user } = useAuth();
    const loggedInUserId = 1;
    const handleAddToCart = (product) => {
     console.log("Added to cart:", product.name);
@@ -48,24 +51,25 @@ const App = () => {
     <Routes>
       {/* Landing Page */}
       <Route path="/" element={<LandingPage />} />
-{/* Login page */}
-        <Route path='/login' element={<LoginPage />} />
+       {/* Login page */}
+        <Route path='/login' element={!user ? <LoginPage /> : <Navigate to="/store" />} />
 
         {/* Register page */}
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/register" element={!user ? <RegisterPage />: <Navigate to="/store" />} />
 
 
                 {/* Pages with Header */}
         <Route element={< LayoutWIthHeader />}>
 
         {/* filter */}
+        <Route path="/store" element={<Home />} />
         <Route path="/store/:category" element={<CategoryPage onAddToCart={handleAddToCart} />} />
         <Route path="/store/:category/:brand" element={<CategoryPage onAddToCart={handleAddToCart} />} />
 
         
 
-      {/* Homepage with Hero + FlashSale + Products */}
-      <Route path="/store" element={<Home />} />
+      {/* Homepage with Hero + FlashSale + Products 
+      <Route path="/store" element={<Home />} />*/}
 
 
       {/* category pages */}
@@ -86,6 +90,7 @@ const App = () => {
    />
    <Route path='/favorites' element={<Favorites />} />
    <Route path="/cart" element={<CartPage />} />
+   <Route path='/recently-viewed' element={<RecentlyViewed />} />
    </Route>
    
    </Routes>

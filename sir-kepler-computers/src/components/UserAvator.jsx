@@ -1,7 +1,7 @@
 // src/components/UserAvatar.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { User, Heart, Package, LogOut } from "lucide-react";
+import { User, Heart, Package, LogOut, Eye } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useWishlistStore } from "../stores/wishlistStore";
@@ -87,6 +87,10 @@ export default function UserAvatar({ user }) {
               ): null}
             </div>
           </Link>
+
+          <Link to="/recently-viewed" className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100">
+           <Eye size={18} />Recently Viewed
+           </Link>
 
           <Link
             to="/orders"

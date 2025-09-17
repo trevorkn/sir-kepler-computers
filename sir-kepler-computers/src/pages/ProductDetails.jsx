@@ -1,19 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { db } from "../firebase";
-import { doc, getDocs, collection, where, query, getDoc } from "firebase/firestore";
 import { getAverageRating } from "../utils/ratingUtils";
 import { useCartStore } from "../stores/cartStore";
+import { saveRecentlyViewed } from "../utils/recentlyViewed";
+import { useAuth } from "../contexts/AuthContext";
+import { useWishlistStore } from "../stores/wishlistStore";
+import { Heart } from "lucide-react"
+import RecentlyViewed from "./RecentlyViewed";
+import Favorites from "./Favorites";
+import { doc, getDocs, collection, where, query, getDoc, updateDoc, setDoc, arrayUnion, arrayRemove} from "firebase/firestore"
 
 export default function ProductDetails({ onAddToCart }) {
+  const { user } = useAuth();
   const { productId } = useParams(); // gets product id from url
   const [currentProduct, setCurrentProduct] = useState(null);
   const [mainImage, setMainImage] = useState("");
   const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
+  const [guestRecentlyViewed, setGuestRecentlyViewed] = useState([]);
+
+    // wishlist state
+  const wishlist = useWishlistStore((state) => state.wishlist);
+  const addToWishlist = useWishlistStore((state) => state.addToWishlist);
+  const removeFromWishlistFirestore = useWishlistStore((state) => state.removeFromWishlistFirestore);
+  const [updatingWishlist, setUpdatingWishlist] = useState(false);
+  const inWishlist = wishlist.some((p) => p.id === currentProduct?.id);
+  const [isLiked, setIsLiked] = useState(inWishlist);
 
   const addToCart = useCartStore((state) => state.addToCart);
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    setIsLiked(inWishlist);
+  }, [inWishlist]);
 
 useEffect(() => {
   async function fetchProduct() {
@@ -34,8 +54,20 @@ useEffect(() => {
       if (querySnapshot.docs.length > 0) {
         const docSnap = querySnapshot.docs[0];
         const data = docSnap.data();
-        setCurrentProduct({ id: docSnap.id, ...data });
+        const product = { id: docSnap.id, ...data };
+        setCurrentProduct(product);
         setMainImage(data.images?.[0] || "");
+        //recently viewed logic
+        if (user) {
+          // logged-in user: save to firestore
+          saveRecentlyViewed(user, product).catch(console.error);
+        } else {
+          //Guest: update local session state
+          setGuestRecentlyViewed((prev) =>{
+            const filtered = prev.filter((p) => p.id !== product.id);
+            return [product, ...filtered].slice(0, 20); //keep max 20
+          });
+        }
       } else {
         setCurrentProduct(null);
       }
@@ -58,6 +90,43 @@ useEffect(() => {
     setQuantity(1);
     setTimeout(() => setAdded(false), 1500);
   };
+
+  const toggleWishlist = async () => {
+    if (!user) return alert("Please log in to use wishlist")
+
+      if (updatingWishlist) return;
+      setUpdatingWishlist(true);
+
+      const newLikedState = !isLiked;
+      setIsLiked(newLikedState);
+
+      const userRef = doc(db, "users", user.uid);
+      try {
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+          await setDoc(userRef, { favorites: []}, { merge: true });
+        }
+        if (newLikedState) {
+          addToWishlist(currentProduct);
+          await updateDoc(userRef, {
+            favorites: arrayUnion(currentProduct.id)
+
+           });
+        } else {
+          //remove from wishlist
+          removeFromWishlistFirestore(currentProduct.id);
+          await updateDoc(userRef, {
+            favorites: arrayRemove(currentProduct.id),
+          });
+        }
+      } catch (err) {
+        console.error("Failed to update wishlist:", err);
+        alert("Error updating wishlist. Please try again.")
+        setIsLiked((prev) => !prev);
+      } finally {
+        setUpdatingWishlist(false);
+      }
+  }
 
   if (loading) {
     return <p className="p-4 text-center">Loading product details...</p>
@@ -118,7 +187,8 @@ useEffect(() => {
             </button>
             </div>
       )}
-      {/* Add to Cart */}
+      {/* Add to Cart + wishlist Row */}
+      <div className="flex items-center gap-3 mt-3">
       <button
         onClick={handleAddToCart}
         disabled={added || !currentProduct.inStock}
@@ -132,6 +202,25 @@ useEffect(() => {
         {currentProduct.inStock ? (added ? "Added!" : "Add to Cart") : "Out of Stock"}
       </button>
 
+      {/* ❤️ Wishlist Button */}
+      <button
+       onClick={toggleWishlist}
+       disabled={updatingWishlist}
+       className={`p-2 rounded-full border ${
+        updatingWishlist ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100"
+       }`}
+       title={isLiked ? "Remove from wishlist" : "Add to wishlist"}
+       >
+        {updatingWishlist ? (
+          <div className="h-5 w-5 animate-spin border-2 border-gray-300 border-t-transparent rounded-full"></div>
+            ) : (
+              <Heart size={20} className={isLiked ? "text-red-500 fill-red-500" : "text-gray-600"}
+              fill={isLiked ? "currentColor" : "none"} />
+            )}
+             </button>
+             </div>
+          </div>
+      
       {/* Average Rating */}
       {currentProduct.ratings?.count > 0 && (
         <p className="mt-2">
@@ -139,8 +228,6 @@ useEffect(() => {
           {currentProduct.ratings.count} ratings)
         </p>
       )}
-        </div>
-        <div></div>
         </div>
 
         {/* Features Section */}
@@ -182,6 +269,10 @@ useEffect(() => {
         ) : (
           <p className="mt-2 text-gray-500">No reviews yet.</p>
         )}
+      </div>
+      <div className="p-6 max-w-5xl mx-auto">
+        <h2 className="text-2xl font-bold mb-4">Recenlty Viewed</h2>
+        <RecentlyViewed limit={5} />
       </div>
     </div>
   );

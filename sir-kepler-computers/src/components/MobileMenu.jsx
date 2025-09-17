@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { Link } from "react-router-dom"
+import { useAuth } from '../contexts/AuthContext';
+import RecenltyViewed from "../pages/RecentlyViewed";
 
 const MobileMenu = ({ isOpen }) => {
+  const { user } = useAuth();
     const [openCategory , setOpenCategory] = useState(null);
 
     if (!isOpen) return null;
@@ -22,7 +25,7 @@ const MobileMenu = ({ isOpen }) => {
 
 
                
-                    <div className={`${openCategory === "categories" ? 'block' : 'hidden'} md:block ml-4 space-y-1 text-gray-700`}>
+                    <div className={`${openCategory === "categories" ? 'block' : 'hidden'} md:block ml-4 space-y-1 text-gray-700 text-left`}>
                         <Link to="/store/laptops" className='block'>
                         • Laptops
                         </Link>
@@ -37,6 +40,11 @@ const MobileMenu = ({ isOpen }) => {
                         </Link>
                         <Link to="/store/accessories" className='block'>
                         </Link>
+                        {!user &&(
+                        <Link to="/recently-viewed" className='block'>
+                        Recently Viewed
+                        </Link>
+                        )}
                     </div>
 
             {/* Utilities */}
