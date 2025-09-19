@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "sir-kepler-computers",
+    "compstore": "sir-kepler-computers"
+  },
+  "targets": {},
+  "etags": {}
+}

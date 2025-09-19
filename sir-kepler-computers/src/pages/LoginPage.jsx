@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,8 +16,17 @@ export default function LoginPage() {
     setError('');
 
    try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
     // Firebase AuthContext picks up the user automatically
+
+    //update lastLogin
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, {
+      lastLogin: serverTimestamp(),
+    })
+
+
     navigate('/store'); //redirect after successfull login
    } catch (err) {
     console.error(err.message);

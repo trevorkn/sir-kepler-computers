@@ -7,6 +7,7 @@ import { FiPlus } from 'react-icons/fi';
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db , auth, storage} from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import RecentlyViewed from './RecentlyViewed';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -82,6 +83,10 @@ export default function RegisterPage() {
               isActive: true,
               photoURL: photoURL || null,
               createdAt: serverTimestamp(),
+              lastLogin: serverTimestamp(),
+              favorites: [],
+              cart: [],
+              recentlyViewed: [],
             });
 
             // ---create empty wishlist for the user ---

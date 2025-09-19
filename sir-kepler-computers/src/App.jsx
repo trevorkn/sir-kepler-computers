@@ -15,6 +15,7 @@ import Favorites from './pages/Favorites';
 import CartPage from "./pages/CartPage";
 import RecentlyViewed from './pages/RecentlyViewed';
 import { useAuth } from './contexts/AuthContext';
+import ProfilePage from "./pages/ProfilePage"
 
 
 const ProductDetailsWrapper = ({ loggedInUserId, onAddToCart}) => {
@@ -91,6 +92,7 @@ const App = () => {
    <Route path='/favorites' element={<Favorites />} />
    <Route path="/cart" element={<CartPage />} />
    <Route path='/recently-viewed' element={<RecentlyViewed />} />
+   <Route path='/profile' element={<ProfilePage user={user} />} />
    </Route>
    
    </Routes>
