@@ -63,7 +63,8 @@ const App = () => {
         <Route element={< LayoutWIthHeader />}>
 
         {/* filter */}
-        <Route path="/store" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/store" element={<StorePage />} />
         <Route path="/store/:category" element={<CategoryPage onAddToCart={handleAddToCart} />} />
         <Route path="/store/:category/:brand" element={<CategoryPage onAddToCart={handleAddToCart} />} />
 
@@ -72,10 +73,6 @@ const App = () => {
       {/* Homepage with Hero + FlashSale + Products 
       <Route path="/store" element={<Home />} />*/}
 
-
-      {/* category pages */}
-   <Route path="/category/:category" element={<CategoryPage onAddToCart={handleAddToCart} />} />
-   <Route path="/category/:category/:brand" element={<CategoryPage onAddToCart={handleAddToCart} />} />
 
  {/* Search results */}
    <Route path="/search-results" element={<SearchResults />} />
@@ -93,6 +90,7 @@ const App = () => {
    <Route path="/cart" element={<CartPage />} />
    <Route path='/recently-viewed' element={<RecentlyViewed />} />
    <Route path='/profile' element={<ProfilePage user={user} />} />
+   <Route path='/contact-us' element={<Contact-Us />} />
    </Route>
    
    </Routes>
