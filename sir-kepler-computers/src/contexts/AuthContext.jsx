@@ -16,19 +16,21 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         //Track user login state
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                clearWishlist();
+            }
+
             setUser(currentUser);
             setLoading(false);
 
             if (currentUser) {
                 await refreshWishlist();
                 await fetchCart();
-            } else {
-                clearWishlist();
             }
         });
 
         return () => unsubscribe();
-        }, [refreshWishlist, fetchCart]);
+        }, [refreshWishlist, fetchCart, clearWishlist]);
 
         const logout = async () => {
             await signOut(auth);

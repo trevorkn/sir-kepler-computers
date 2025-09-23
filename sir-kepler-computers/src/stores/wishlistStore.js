@@ -17,9 +17,10 @@ export const useWishlistStore = create(
 
     addToWishlistFirestore : async (product) => {
         const prevWishlist = get().wishlist;
+        const prodId = String(product.id);
 
         set((state) => ({
-           wishlist: state.wishlist.find((p) => p.id === product.id)
+           wishlist: state.wishlist.find((p) => String(p.id) === prodId)
            ? state.wishlist
            : [...state.wishlist, product],
         }));
@@ -32,6 +33,9 @@ export const useWishlistStore = create(
             await updateDoc(userRef, {
                 favorites: arrayUnion(product.id),
             });
+
+            await get().refreshWishlist();
+
         } catch (err) {
             console.error("Failed to add to Firestore:", err);
             //Rollback if firestore fails
@@ -41,19 +45,11 @@ export const useWishlistStore = create(
 
         removeFromWishlistFirestore: async (id) => {
             const prevWishlist = get().wishlist;
+            const targetId = String(id);
             // Optimistic local update
-
-           {/* 
-                Optimistic UI update disabled:
-                This line would remove the item from the local wishlist immediately,
-                before Firestore confirms the change. 
-                Left commented out so we only rely on Firestore for truth 
-                (updates will show after refresh or `refreshWishlist()` call).
-                Uncomment to enable instant UI feedback.
-                */}
-            {/* set({
-                wishlist: prevWishlist.filter((p) => p.id !== id),
-            }); */}
+            set({
+              wishlist: prevWishlist.filter((p) => String(p.id) !== targetId),
+            });
 
             try{
             const user = auth.currentUser;
@@ -63,6 +59,8 @@ export const useWishlistStore = create(
             await updateDoc(userRef, {
                 favorites: arrayRemove(id),
             });
+            await get().refreshWishlist();
+
              } catch (err) {
                 console.error("Failed to remove from firestore:", err);
                 // Rollback if firestore fails

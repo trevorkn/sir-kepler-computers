@@ -57,39 +57,28 @@ const formatPrice = (num, currency = "KSh") => {
 
 
 
-        const inWishlist = wishlist.some((p) => p.id === id);
-
-        const [isLiked, setIsLiked] = useState(inWishlist);
-
-        useEffect(() => {
-          setIsLiked(inWishlist);
-        }, [inWishlist]);
+        const isLiked = wishlist.some((p) => String(p.id) === String(id));
 
         const toggleWishlist = async () => {
-          const user = auth.currentUser;
-          if (!user) return alert("Please log in to use wishlist");
+  const user = auth.currentUser;
+  if (!user) return alert("Please log in to use wishlist");
 
-          if (updatingWishlist) return;// prevent double clicks
-          setUpdatingWishlist(true);
+  if (updatingWishlist) return; // prevent double clicks
+  setUpdatingWishlist(true);
 
-          //store new value after toggle
-          const newLikedState = !isLiked;
-          setIsLiked(newLikedState);
+  try {
+    if (!isLiked) {
+      await addToWishlistFirestore(product);
+    } else {
+      await removeFromWishlistFirestore(product.id);
+    }
+  } catch (err) {
+    console.error("Failed to update wishlist:", err);
+  } finally {
+    setUpdatingWishlist(false);
+  }
+};
 
-          try {
-            if (newLikedState) {
-              await addToWishlistFirestore(product);
-            } else {
-              await removeFromWishlistFirestore(product.id);
-            }
-          } catch (err) {
-            console.error("Failed to update wishlist:", err);
-            setIsLiked((prev) => !prev);
-          } finally {
-            setUpdatingWishlist(false);
-          }
-
-        };
     return (
         <div className="group overflow-hidden rounded-2xl bg-white text-black shadow-sm transition-transform transition-shadow duration-300 hover:-translate-y-2 hover:shadow-md">
   {/* Clickable Area (Image + Name + Price) */}
@@ -140,7 +129,7 @@ const formatPrice = (num, currency = "KSh") => {
   className={`rounded-full bg-white/80 p-1 shadow hover:bg-white transition-opacity ${
     updatingWishlist ? "opacity-50 cursor-not-allowed" : ""
   }`}
-  title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+  title={isLiked ? "Remove from wishlist" : "Add to wishlist"}
 >
   {updatingWishlist ? (
     <div className="h-5 w-5 animate-spin border-2 border-gray-300 border-t-transparent rounded-full"></div>

@@ -3,10 +3,12 @@ import ProductCard from "../components/ProductCard";
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
+import { useWishlistStore } from "../stores/wishlistStore";
 
 export default function RecentlyViewed({ limit }){
     const { user } = useAuth();
     const [products, setProducts] = useState([]);
+    const wishlist = useWishlistStore((state) => state.wishlist);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -24,7 +26,7 @@ export default function RecentlyViewed({ limit }){
             //Deduplicate by id (keep only the latest for each id)
             const map = new Map();
             raw.forEach((p) => {
-                const id = String(p.id); //normalize to string
+                const id = p.id;
                 const image = p.image || (p.images?.[0] ?? "/placeholder.png");
                 if (!map.has(id)) {
                     map.set(id, { ...p, id, image });
@@ -61,7 +63,9 @@ export default function RecentlyViewed({ limit }){
             ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                     {products.map((p) => (
-                        <ProductCard key={p.id} product={p} />
+                        <ProductCard key={p.id}
+                         product={p} 
+                         />
                     ))}
                     </div>
             )}
