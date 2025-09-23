@@ -9,7 +9,6 @@ import { Link } from "react-router-dom"
 import { useCartStore } from '../stores/cartStore';
 import { Heart} from "lucide-react";
 import { useWishlistStore } from '../stores/wishlistStore';
-import { doc, updateDoc ,setDoc ,getDoc ,arrayUnion, arrayRemove } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
 
@@ -53,7 +52,7 @@ const formatPrice = (num, currency = "KSh") => {
 
         const addToCart = useCartStore((state) => state.addToCart);
         const wishlist = useWishlistStore((state) => state.wishlist);
-        const addToWishlist = useWishlistStore((state) => state.addToWishlist);
+        const addToWishlistFirestore = useWishlistStore((state) => state.addToWishlistFirestore);
         const removeFromWishlistFirestore = useWishlistStore((state) => state.removeFromWishlistFirestore);
 
 
@@ -77,35 +76,20 @@ const formatPrice = (num, currency = "KSh") => {
           const newLikedState = !isLiked;
           setIsLiked(newLikedState);
 
-          const userRef = doc(db, "users", user.uid);
           try {
-             const userSnap = await getDoc(userRef);
-            if (!userSnap.exists()) {
-      // Create a fresh user doc if not exists
-       await setDoc(userRef, { favorites: [] }, { merge: true });
-        }
-
-       if (newLikedState) {
-      addToWishlist(product);
-      await updateDoc(userRef, {
-        favorites: arrayUnion(product.id),
-      });
+            if (newLikedState) {
+              await addToWishlistFirestore(product);
             } else {
-                removeFromWishlistFirestore(product.id);
-                 await updateDoc(userRef, {
-                  favorites: arrayRemove(product.id),
-            });
+              await removeFromWishlistFirestore(product.id);
             }
           } catch (err) {
             console.error("Failed to update wishlist:", err);
-            alert("Error updating wishlist. Please try again.");
-            // Revert local state if failed
             setIsLiked((prev) => !prev);
           } finally {
             setUpdatingWishlist(false);
           }
+
         };
-        
     return (
         <div className="group overflow-hidden rounded-2xl bg-white text-black shadow-sm transition-transform transition-shadow duration-300 hover:-translate-y-2 hover:shadow-md">
   {/* Clickable Area (Image + Name + Price) */}

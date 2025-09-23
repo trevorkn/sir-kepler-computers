@@ -16,6 +16,9 @@ import CartPage from "./pages/CartPage";
 import RecentlyViewed from './pages/RecentlyViewed';
 import { useAuth } from './contexts/AuthContext';
 import ProfilePage from "./pages/ProfilePage"
+import ContactUs from "./pages/ContactUs"
+import AboutUs from './pages/AboutUs';
+import Report from "./pages/Report.jsx";
 
 
 const ProductDetailsWrapper = ({ loggedInUserId, onAddToCart}) => {
@@ -90,7 +93,10 @@ const App = () => {
    <Route path="/cart" element={<CartPage />} />
    <Route path='/recently-viewed' element={<RecentlyViewed />} />
    <Route path='/profile' element={<ProfilePage user={user} />} />
-   <Route path='/contact-us' element={<Contact-Us />} />
+   <Route path='/contactUs' element={<ContactUs />} />
+   <Route path='/aboutUs' element={<AboutUs />} />
+
+   <Route path='/report' element={<Report />} />
    </Route>
    
    </Routes>

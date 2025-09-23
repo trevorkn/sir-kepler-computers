@@ -108,7 +108,7 @@ const Header = () => {
                         <Link to="/home" className='hover:underline'>Home</Link>
                         <Link to="/store" className='hover:underline'>Store</Link>
                         <Link to="/blogs" className='hover:underline'>Blogs</Link>
-                        <Link to="/contact-us" className='hover:underline'>Contact Us</Link>
+                        <Link to="/contactUs" className='hover:underline'>Contact Us</Link>
                     </div>
 
                     {/* Right: cart */}

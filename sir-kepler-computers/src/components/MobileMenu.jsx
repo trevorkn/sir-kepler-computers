@@ -72,7 +72,7 @@ const MobileMenu = ({ isOpen }) => {
               )}
 
               <Link to="/blogs" className="block">Blogs</Link>
-              <Link to="/about-us" className='block'>
+              <Link to="/aboutUs" className='block'>
               About Us
               </Link>
             </div>

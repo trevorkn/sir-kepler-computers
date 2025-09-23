@@ -8,6 +8,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const refreshWishlist = useWishlistStore((state) => state.refreshWishlist);
+    const clearWishlist = useWishlistStore((state) => state.clearWishlist);
     const fetchCart = useCartStore((state) => state.fetchCart);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -21,6 +22,8 @@ export const AuthProvider = ({ children }) => {
             if (currentUser) {
                 await refreshWishlist();
                 await fetchCart();
+            } else {
+                clearWishlist();
             }
         });
 

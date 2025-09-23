@@ -9,16 +9,16 @@ export default function Footer() {
         
         {/* Social links */}
         <div className="flex gap-4 text-gray-300">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.facebook.com/share/1Eu9aUD4kk/" target="_blank" rel="noopener noreferrer">
             <FaFacebookF className="hover:text-blue-500 transition" size={20} />
           </a>
           <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
             <FaTwitter className="hover:text-blue-400 transition" size={20} />
           </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.instagram.com/sirkeplercomputers?igsh=MTdraDZkNHdvNzRmcg==" target="_blank" rel="noopener noreferrer">
             <FaInstagram className="hover:text-pink-500 transition" size={20} />
           </a>
-          <a href="https://wa.me/yourwhatsappnumber" target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/0799687000" target="_blank" rel="noopener noreferrer">
             <FaWhatsapp className="hover:text-green-500 transition" size={20} />
           </a>
         </div>

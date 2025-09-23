@@ -22,7 +22,7 @@ export default function ProductDetails({ onAddToCart }) {
 
     // wishlist state
   const wishlist = useWishlistStore((state) => state.wishlist);
-  const addToWishlist = useWishlistStore((state) => state.addToWishlist);
+  const addToWishlistFirestore = useWishlistStore((state) => state.addToWishlistFirestore);
   const removeFromWishlistFirestore = useWishlistStore((state) => state.removeFromWishlistFirestore);
   const [updatingWishlist, setUpdatingWishlist] = useState(false);
   const inWishlist = wishlist.some((p) => p.id === currentProduct?.id);
@@ -107,14 +107,14 @@ useEffect(() => {
           await setDoc(userRef, { favorites: []}, { merge: true });
         }
         if (newLikedState) {
-          addToWishlist(currentProduct);
+          await addToWishlistFirestore(currentProduct);
           await updateDoc(userRef, {
             favorites: arrayUnion(currentProduct.id)
 
            });
         } else {
           //remove from wishlist
-          removeFromWishlistFirestore(currentProduct.id);
+          await removeFromWishlistFirestore(currentProduct.id);
           await updateDoc(userRef, {
             favorites: arrayRemove(currentProduct.id),
           });
