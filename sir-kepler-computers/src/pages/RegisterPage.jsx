@@ -7,17 +7,19 @@ import { FiPlus } from 'react-icons/fi';
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db , auth, storage} from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import RecentlyViewed from './RecentlyViewed';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [mobile, setMobile] = useState('');
   const [error, setError] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
 
   //clean preview URL
      useEffect(() => {
@@ -47,12 +49,34 @@ export default function RegisterPage() {
               return "Something went wrong. Please try again.";
       }
     };
+
+    // Format number to international format
+    const formatMobileNumber = (num) => {
+      let clean = num.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
+      if (clean.startsWith('0')) {
+        return `+254${clean.slice(1)}`; // convert 07xxxxxxxx -> +2547xxxxxxxx
+      }
+      if (clean.startsWith('+254')) {
+        return clean; //already in correct format
+      }
+      return clean; //fallback (user might enter already formatted number)
+    }
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+    
+    const formattedMobile = formatMobileNumber(mobile)
+
+    if (!/^\+2547\d{8}$/.test(formattedMobile)) {
+      setError("Enter a valid Kenyan mobile number");
+      setLoading(false);
       return;
     }
 
@@ -79,6 +103,8 @@ export default function RegisterPage() {
               uid: user.uid,
               displayName: name,
               email: user.email,
+              mobile: formattedMobile,
+              isMobileVerified: false,
               role: "customer",
               isActive: true,
               photoURL: photoURL || null,
@@ -109,6 +135,8 @@ export default function RegisterPage() {
     } catch (err) {
         console.error(err.message);
         setError(getFriendlyError(err.code)); // show Firebase error (like email already in use) 
+    } finally {
+      setLoading(false);
     }
     };
     
@@ -156,6 +184,14 @@ export default function RegisterPage() {
             required
           />
           <input
+           type="tel"
+           placeholder='Moblile Number(e.g. 0712345678)'
+           value={mobile}
+           onChange={(e) => setMobile(e.target.value)}
+           className='border border-gray-300 p-3 rounded-md focus: outline-none focus:ring-2 focus:ring-blue-500'
+           required
+           />
+          <input
             type="password"
             placeholder="Password"
             value={password}
@@ -173,10 +209,11 @@ export default function RegisterPage() {
           />
           <button
             type="submit"
-            className="bg-blue-700 text-white p-3 rounded-md font-semibold hover:bg-blue-800 transition"
-            disabled={!email || !password || !name}
+            className={`bg-blue-700 text-white p-3 rounded-md font-semibold transition ${
+            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-800"}`}
+            disabled={!name || !email || !mobile || !password || password !== confirmPassword}
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Pencil, X, Check, Trash2 } from "lucide-react";
 import {
   updateProfile,
@@ -8,12 +8,53 @@ import {
   deleteUser,
 } from "firebase/auth";
 import { auth, db, storage } from "../firebase";
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function ProfilePage() {
   const { user } = useAuth();
+
+  
+  const [editingField, setEditingField] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    displayName: user?.displayName || "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+    photoURL: user?.photoURL || "", // 🔹 Track photoURL locally
+    mobile: user?.mobile || "",
+  });
+
+
+    useEffect (() => {
+    const fetchUserData = async () => {
+    if (!user) return;
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        
+        setFormData((prev) => ({
+          ...prev,
+          displayName: userData.displayName || user.displayName || "",
+          photoURL: userData.photoURL || user.photoURL || "",
+          mobile: userData.mobile || "",
+          isMobileVerified: userData.isMobileVerified ?? false,
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
+  };
+
+  fetchUserData();
+  
+}, [user]);
 
   // 🔹 Show clearer message if no user (not just loading)
   if (!user) {
@@ -30,16 +71,6 @@ export default function ProfilePage() {
     );
   }
 
-  const [editingField, setEditingField] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const [formData, setFormData] = useState({
-    displayName: user.displayName || "",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-    photoURL: user.photoURL || "", // 🔹 Track photoURL locally
-  });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -54,6 +85,21 @@ export default function ProfilePage() {
         await updateDoc(doc(db, "users", user.uid), {
           displayName: formData.displayName,
         });
+      }
+
+      if (field === "mobile") {
+        await updateDoc(doc(db, "users", user.uid), {
+          mobile: formData.mobile,
+          isMobileVerified: false, // reset verification when changing
+        });
+
+    // Update UI immediately without re-fetching from Firestore
+        setFormData((prev) => ({
+          ...prev,
+          mobile: formData.mobile,
+          isMobileVerified: false, // reset verification state locally too
+        }));
+
       }
 
       if (field === "password") {
@@ -134,6 +180,24 @@ export default function ProfilePage() {
     setLoading(false);
   };
 
+    const handleVerifyPhone = async () => {
+      if (formData.isMobileVerified) return; // already verified, do nothing.
+      setLoading(true);
+      try {
+        await updateDoc(doc(db, "users", user.uid), { isMobileVerified: true });
+
+        setFormData((prev) => ({
+          ...prev,
+          isMobileVerified: true,
+        }));
+        alert("Phone number verified ✅");
+      } catch (err) {
+        alert(err.message);
+      }
+      setLoading(false);
+  };
+
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       {/* Avatar */}
@@ -187,7 +251,7 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="flex gap-3 items-center">
-              <span>{user.displayName}</span>
+              <span>{formData.displayName || "Not set"}</span>
               <button onClick={() => setEditingField("displayName")}>
                 <Pencil size={18} className="text-gray-500" />
               </button>
@@ -206,10 +270,69 @@ export default function ProfilePage() {
         </div>
       </div>
 
+        {/* Phone Number */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <span className="font-semibold">Phone Number:</span>
+          {editingField === "mobile" ? (
+            <div className="flex gap-2 items-center">
+              <input
+                 type="tel"
+                 name="mobile"
+                 value={formData.mobile}
+                 onChange={handleChange}
+                 className="border rounded px-2 py-1 text-sm"
+                 />
+          
+          <button
+            onClick={() => handleSave("mobile")}
+            disabled={loading}
+            className="text-green-600"
+            >
+              <Check size={18} />
+            </button>
+            <button
+              onClick={() => setEditingField(null)}
+              className="text-red-600"
+              >
+                <X size={18} />
+            </button>
+            </div>
+          ) : (
+            <div className="flex gap-3 items-center">
+              <span>{formData.mobile || "Not  set"}</span>
+              {/* Edit button */}
+            <button 
+            onClick={() => setEditingField("mobile")}
+            >
+              <Pencil className="w-4 h-4 text-gray-600" />
+            </button>
+            {/* Verify button */}
+            {!formData.isMobileVerified && formData.mobile && (
+
+            <button
+              onClick={handleVerifyPhone}
+              disabled={loading}
+              className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                {loading ? "verifying..." : "verify"}
+              </button>
+            )}
+            {/* Show verified badge if already verified */}
+            {formData.mobile && formData.isMobileVerified && (
+              <span className="text-green-600 text-sm font-semibold">
+                ✅ Verified
+              </span>
+            )}
+              </div>
+            )}
+        </div>
+      </div>
       {/* Password */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <span className="font-semibold">Password:</span>
+
           {editingField === "password" ? (
             <div className="flex flex-col gap-2 w-full max-w-sm">
               <input

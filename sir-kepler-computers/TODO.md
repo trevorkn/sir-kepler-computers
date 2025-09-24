@@ -12,12 +12,12 @@
  ~~ - Update cart totals dynamically~~
  ~~ - Sync with Firestore (optional for cross-device persistence)~~
  - Sign Up & User Schema
-    - Add phone number field in Firestore schema
-    - Update registration form to request phone number
+   ~~ - Add phone number field in Firestore schema~~
+   ~~ - Update registration form to request phone number~~
     -Store phoneVerified: true/false
 
   -Profile page
-    -Make phone number editable
+   ~~ -Make phone number editable~~
     -Add phone number verification (Firebase SMS OTP)
     -Restrict checkout until phoneVerified === true
 
@@ -53,6 +53,8 @@
 ~~- Lazy loading for images~~
 ## Phase 6: Checkout & Orders
 -Build Cart Page & Checkout Workflow
+  -Add delivery input location(Yet to decide on how to implement this)
+  -Allow saving multiple delivery addreses for users
 
 -Integrate payment methods:
 
@@ -82,15 +84,15 @@
 
   -Add phoneNumber & phoneVerified fields to Firestore schema
 
-  -Update registration form to request phone number
+  ~~-Update registration form to request phone number~~
 
-  -Add fallback for existing users without phone number
+  ~~-Add fallback for existing users without phone number~~
 
    ### Day 2 – Thursday
 
- -Make phone number editable in profile
+ ~~-Make phone number editable in profile~~
 
- -Show verification status (Verified / Not Verified)
+~~ -Show verification status (Verified / Not Verified)~~
 
   ### Day 3 – Friday
 
