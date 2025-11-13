@@ -97,6 +97,7 @@
   ### Day 3 – Friday
 
   - Implement Firebase Phone Auth (SMS OTP)
+      ***SMS OTP not received even after successful validation***
 
   - Update Firestore on success (phoneVerified: true)
 

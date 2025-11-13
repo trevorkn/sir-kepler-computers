@@ -1,8 +1,11 @@
-import React from "react";
+import React, {useEffect, useState } from "react";
 import {Trash2, Plus, Minus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cartStore";
-
+import { doc,getDoc } from "firebase/firestore";
+import {db } from "../firebase";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import toast from "react-hot-toast";
 
 export default function CartPage() {
     const cart = useCartStore((state) => state.cart);
@@ -10,6 +13,37 @@ export default function CartPage() {
     const removeFromCart = useCartStore((state) => state.removeFromCart);
     const getTotal = useCartStore((state) => state.getTotal);
     const getCount = useCartStore((state) => state.getCount);
+    const [isVerified, setIsVerified] = useState(null);
+
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+            const auth = getAuth();
+            
+            
+            const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                setIsVerified(false);
+                return;
+            }
+            try {
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                setIsVerified(docSnap.data().isMobileVerified);
+            } else {
+                setIsVerified(false);
+            }
+        } catch (error) {
+            console.error("Error checking verification:", error);
+            setIsVerified(false);
+        }
+    });
+
+        return () => unsubscribe(); //cleanup listener
+}, []);
 
     if (cart.length === 0) {
         return (
@@ -21,6 +55,24 @@ export default function CartPage() {
             </div>
         );
     }
+
+    const handleCheckout = () => {
+        if (!isVerified) {
+            toast.error("Please verify your mobile number before proceeding to checkout.", {
+                duration: 4000,
+                style: {
+                    background: "#fef3c7",
+                    color: "#b45309",
+                    border: "1px solid #facc15",
+                },
+                icon: "📱"
+            });
+            return;
+        }
+        navigate("/checkout");
+        toast.success("redirecting to checkout...")
+    };
+
     return (
         <div className="max-w-4xl mx-auto p-6">
             <h1 className="text-2xl font-bold mb-6">My cart</h1>
@@ -77,14 +129,21 @@ export default function CartPage() {
                 <span>Total cost:</span>
                 <span>Kes{getTotal().toLocaleString("en-KE", { minimumFractionDigits: 2})}</span>
             </div>
-            <Link
-             to="/checkout"
+            <button
+             onClick={handleCheckout}
+             disabled={cart.length === 0}
              className={`block mt-4 w-full text-center py-3 rounded-xl font-semibold text-white ${
-            cart.length === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+            cart.length === 0
+                 ? "bg-gray-400 cursor-not-allowed" 
+                 : isVerified === false
+                 ?"bg-yellow-500 hover:bg-yellow-600"
+                 : "bg-green-600 hover:bg-green-700"
         }`}
         >
-            Proceed to checkout
-            </Link>
+          {isVerified === false
+          ? "verify your account to checkout"
+            : "Proceed to checkout"}
+            </button>
         </div>
         </div>
     );

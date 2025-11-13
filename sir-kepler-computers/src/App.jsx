@@ -19,6 +19,7 @@ import ProfilePage from "./pages/ProfilePage"
 import ContactUs from "./pages/ContactUs"
 import AboutUs from './pages/AboutUs';
 import Report from "./pages/Report.jsx";
+import { Toaster } from 'react-hot-toast';
 
 
 const ProductDetailsWrapper = ({ loggedInUserId, onAddToCart}) => {
@@ -52,6 +53,7 @@ const App = () => {
   return (
   <div className='flex flex-col min-h-screen'>
   <div className='flex-grow'>
+    <Toaster position='top-center' reverseOrder={false} />
     <Routes>
       {/* Landing Page */}
       <Route path="/" element={<LandingPage />} />

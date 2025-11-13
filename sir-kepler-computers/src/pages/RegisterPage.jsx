@@ -50,17 +50,7 @@ export default function RegisterPage() {
       }
     };
 
-    // Format number to international format
-    const formatMobileNumber = (num) => {
-      let clean = num.replace(/\s+/g, '').replace(/[^0-9+]/g, '');
-      if (clean.startsWith('0')) {
-        return `+254${clean.slice(1)}`; // convert 07xxxxxxxx -> +2547xxxxxxxx
-      }
-      if (clean.startsWith('+254')) {
-        return clean; //already in correct format
-      }
-      return clean; //fallback (user might enter already formatted number)
-    }
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
@@ -71,10 +61,11 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
-    
-    const formattedMobile = formatMobileNumber(mobile)
 
-    if (!/^\+2547\d{8}$/.test(formattedMobile)) {
+    const phone = mobile.trim();
+    
+    // Validate mobile input directly, must start with +254 and have 9 digits after
+    if (!/^\+254\d{9}$/.test(mobile)) {
       setError("Enter a valid Kenyan mobile number");
       setLoading(false);
       return;
@@ -103,7 +94,7 @@ export default function RegisterPage() {
               uid: user.uid,
               displayName: name,
               email: user.email,
-              mobile: formattedMobile,
+              mobile,
               isMobileVerified: false,
               role: "customer",
               isActive: true,
@@ -185,9 +176,15 @@ export default function RegisterPage() {
           />
           <input
            type="tel"
-           placeholder='Moblile Number(e.g. 0712345678)'
+           placeholder='+254712345678'
            value={mobile}
            onChange={(e) => setMobile(e.target.value)}
+           onFocus={(e) => {
+            if (e.target.value.trim() === "") {
+              setMobile("+254");
+            }
+           }}
+           pattern="^\+254\d{9}$"
            className='border border-gray-300 p-3 rounded-md focus: outline-none focus:ring-2 focus:ring-blue-500'
            required
            />

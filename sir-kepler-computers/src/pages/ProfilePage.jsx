@@ -6,18 +6,24 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   deleteUser,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
 } from "firebase/auth";
 import { auth, db, storage } from "../firebase";
 import { doc, updateDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useAuth } from "../contexts/AuthContext";
+import { useRef } from "react"
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const recaptchaVerifierRef = useRef(null);
 
   
   const [editingField, setEditingField] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     displayName: user?.displayName || "",
@@ -26,7 +32,12 @@ export default function ProfilePage() {
     confirmPassword: "",
     photoURL: user?.photoURL || "", // 🔹 Track photoURL locally
     mobile: user?.mobile || "",
+    isMobileVerified: false,
   });
+
+   const [otpCode, setOtpCode] = useState("");  //Track OTP input
+   const [confirmationResult, setConfirmationResult] = useState(null);  // Store firebase confirmation
+   const [otpStep, setOtpStep] = useState(false);  //Control showing OTP input UI.
 
 
     useEffect (() => {
@@ -143,7 +154,7 @@ export default function ProfilePage() {
       await updateProfile(auth.currentUser, { photoURL: downloadURL });
       await updateDoc(doc(db, "users", user.uid), { photoURL: downloadURL });
 
-      // ✅ Avoid full page reload - just update state
+      // Avoid full page reload: just update the state
       setFormData((prev) => ({ ...prev, photoURL: downloadURL }));
 
       alert("Profile picture updated ✅");
@@ -157,7 +168,7 @@ export default function ProfilePage() {
   const handleDeleteAccount = async () => {
     if (!window.confirm("Are you sure? This will permanently delete your account.")) return;
 
-    setLoading(true);
+    setDeleteLoading(true);
     try {
       const avatarRef = ref(storage, `avatars/${user.uid}/profile.jpg`);
       try {
@@ -177,26 +188,61 @@ export default function ProfilePage() {
         alert(err.message);
       }
     }
-    setLoading(false);
+    setDeleteLoading(false);
   };
 
+
+        // set up reCAPTCHA and send OTP
     const handleVerifyPhone = async () => {
       if (formData.isMobileVerified) return; // already verified, do nothing.
-      setLoading(true);
+     
       try {
-        await updateDoc(doc(db, "users", user.uid), { isMobileVerified: true });
+         setVerifyLoading(true);
 
-        setFormData((prev) => ({
-          ...prev,
-          isMobileVerified: true,
-        }));
-        alert("Phone number verified ✅");
-      } catch (err) {
-        alert(err.message);
-      }
-      setLoading(false);
-  };
+         if (!recaptchaVerifierRef.current) {
+            recaptchaVerifierRef.current = new RecaptchaVerifier(auth, "recaptcha-container", {
+              size: "normal",
+              callback: (response) => console.log("reCAPTCHA solved !!", response),
+              "expired-callback": () => alert("reCAPTCHA expired. Please try again."),
+            });
+            await recaptchaVerifierRef.current.render();
+           }
 
+         const result = await signInWithPhoneNumber(
+          auth,
+          formData.mobile,
+          recaptchaVerifierRef.current
+         );
+
+         setConfirmationResult(result);
+         setOtpStep(true);  //show OTP input
+         alert(`OTP sent to ${formData.mobile}`);
+        }catch (err) {
+          alert(`Error sending OTP: ${err.message}`);
+        } finally {
+          setVerifyLoading(false);
+        }
+        };
+
+        // * Confirm OTP
+
+        const handleConfirmOtp = async () => {
+          if (!otpCode) return alert("Enter the OTP first.");
+          try {
+            setLoading(true);
+            await confirmationResult.confirm(otpCode);
+            await updateDoc(doc(db, "users", user.uid), { isMobileVerified: true });
+
+            setFormData((prev) => ({ ...prev, isMobileVerified: true }))
+            setOtpStep(false);
+            setOtpCode("");
+            alert("Phone number verified successfully");
+          } catch (err) {
+            alert("Invalid OTP. Please try again.")
+          } finally {
+            setLoading(false);
+          }
+        }
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -271,63 +317,83 @@ export default function ProfilePage() {
       </div>
 
         {/* Phone Number */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <span className="font-semibold">Phone Number:</span>
-          {editingField === "mobile" ? (
-            <div className="flex gap-2 items-center">
-              <input
-                 type="tel"
-                 name="mobile"
-                 value={formData.mobile}
-                 onChange={handleChange}
-                 className="border rounded px-2 py-1 text-sm"
-                 />
-          
-          <button
-            onClick={() => handleSave("mobile")}
-            disabled={loading}
-            className="text-green-600"
-            >
-              <Check size={18} />
-            </button>
-            <button
-              onClick={() => setEditingField(null)}
-              className="text-red-600"
-              >
-                <X size={18} />
-            </button>
-            </div>
-          ) : (
-            <div className="flex gap-3 items-center">
-              <span>{formData.mobile || "Not  set"}</span>
-              {/* Edit button */}
-            <button 
-            onClick={() => setEditingField("mobile")}
-            >
-              <Pencil className="w-4 h-4 text-gray-600" />
-            </button>
-            {/* Verify button */}
-            {!formData.isMobileVerified && formData.mobile && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">Phone Number:</span>
+            {editingField === "mobile" ? (
+              <div className="flex gap-2 items-center">
+                <input
+                  type="tel"
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleChange}
+                  placeholder="+254712345678"
+                  className="border rounded px-2 py-1 text-sm"
+                />
+                <button
+                  onClick={() => handleSave("mobile")}
+                  disabled={loading}
+                  className="text-green-600"
+                >
+                  <Check size={18} />
+                </button>
+                <button
+                  onClick={() => setEditingField(null)}
+                  className="text-red-600"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-3 items-center">
+                  <span>{formData.mobile || "Not set"}</span>
+                  <button onClick={() => setEditingField("mobile")}>
+                    <Pencil className="w-4 h-4 text-gray-600" />
+                  </button>
 
-            <button
-              onClick={handleVerifyPhone}
-              disabled={loading}
-              className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700"
-              >
-                {loading ? "verifying..." : "verify"}
-              </button>
-            )}
-            {/* Show verified badge if already verified */}
-            {formData.mobile && formData.isMobileVerified && (
-              <span className="text-green-600 text-sm font-semibold">
-                ✅ Verified
-              </span>
-            )}
+                  {!formData.isMobileVerified && formData.mobile && (
+                    <button
+                      onClick={handleVerifyPhone}
+                      disabled={verifyLoading || !/^\+254\d{9}$/.test(formData.mobile)}
+                      className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                    >
+                      {verifyLoading ? "Sending..." : "Verify"}
+                    </button>
+                  )}
+
+                  {formData.mobile && formData.isMobileVerified && (
+                    <span className="text-green-600 text-sm font-semibold">
+                      ✅ Verified
+                    </span>
+                  )}
+                </div>
+
+                {/* OTP Input Step */}
+                {otpStep && (
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value)}
+                      placeholder="Enter OTP"
+                      className="border rounded px-2 py-1 text-sm w-32"
+                    />
+                    <button
+                      onClick={handleConfirmOtp}
+                      disabled={loading || otpCode.length === 0}
+                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {loading ? "Verifying..." : "Submit OTP"}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
+          </div>
         </div>
-      </div>
+
+
       {/* Password */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
@@ -390,13 +456,14 @@ export default function ProfilePage() {
       <div className="mt-10 flex justify-end">
         <button
           onClick={handleDeleteAccount}
-          disabled={loading}
+          disabled={deleteLoading}
           className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
           <Trash2 size={18} />
-          Delete Account
+          {deleteLoading ? "Deleting..." : "Delete Account"}
         </button>
       </div>
+      <div id="recaptcha-container"></div>
     </div>
   );
 }
