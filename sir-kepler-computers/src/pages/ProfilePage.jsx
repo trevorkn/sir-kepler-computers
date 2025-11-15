@@ -13,7 +13,8 @@ import { auth, db, storage } from "../firebase";
 import { doc, updateDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { useAuth } from "../contexts/AuthContext";
-import { useRef } from "react"
+import { useRef } from "react";
+import { countiesAndTowns } from "../data/locations";
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -33,6 +34,11 @@ export default function ProfilePage() {
     photoURL: user?.photoURL || "", // 🔹 Track photoURL locally
     mobile: user?.mobile || "",
     isMobileVerified: false,
+
+    addresses: [],
+    newCounty: "",
+    newTown: "",
+    newDetails: "",
   });
 
    const [otpCode, setOtpCode] = useState("");  //Track OTP input
@@ -56,6 +62,8 @@ export default function ProfilePage() {
           photoURL: userData.photoURL || user.photoURL || "",
           mobile: userData.mobile || "",
           isMobileVerified: userData.isMobileVerified ?? false,
+
+          addresses: userData.addresses || [],
         }));
       }
     } catch (err) {
@@ -242,7 +250,58 @@ export default function ProfilePage() {
           } finally {
             setLoading(false);
           }
+        };
+
+        // * Address Management
+        
+        const handleAddAddress = async () => {
+          if (!formData.newCounty || !formData.newTown || !formData.newDetails) {
+            return alert("Please fill in all address fields.");
+          }
+
+          const newAddress = {
+            county: formData.newCounty,
+            town: formData.newTown,
+            details: formData.newDetails,
+          };
+
+          try {
+            const updateAddressess = [...formData.addresses, newAddress];
+
+            await updateDoc(doc(db, "users", user.uid), {
+              addresses: updateAddressess,
+            })
+
+            setFormData((prev) => ({
+              ...prev,
+              addresses: updateAddressess,
+              newCounty: "",
+              newTown: "",
+              newDetails: "",
+            }));
+
+            setEditingField(null);
+            alert("Address added successfully ✅");
+          } catch (err) {
+            alert(err.message);
+          }
         }
+
+        const handleDeleteAddress = async (index) => {
+          const updated = formData.addresses.filter((_, i) => i !== index);
+
+          try {
+            await updateDoc(doc(db, "users", user.uid), {
+               addresses: updated,
+            });
+
+            setFormData((prev) => ({ ...prev, addresses: updated }));
+            alert("Address deleted successfully ✅");
+          } catch (err) {
+            alert(err.message); 
+          }
+        }
+
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -464,6 +523,116 @@ export default function ProfilePage() {
         </button>
       </div>
       <div id="recaptcha-container"></div>
+
+      <div className="pt-12">
+  <div className="border p-6 rounded-lg">
+    <p className="text-lg font-semibold mb-4">Shipping Addresses</p>
+
+    {/* Existing Saved Addresses */}
+    {formData.addresses.length > 0 ? (
+      <ul className="mb-4">
+        {formData.addresses.map((addr, index) => (
+          <li
+            key={index}
+            className="flex justify-between items-center border-b py-2"
+          >
+            <div>
+              <p className="font-medium">
+                {addr.county} - {addr.town}
+              </p>
+              <p className="text-sm text-gray-600">{addr.details}</p>
+            </div>
+
+            <button
+              className="text-red-600"
+              onClick={() => handleDeleteAddress(index)}
+            >
+              <Trash2 size={18} />
+            </button>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-gray-600 mb-4">No addresses added yet.</p>
+    )}
+
+    {/* Add Button */}
+    {editingField !== "newAddress" && (
+      <button
+        onClick={() => setEditingField("newAddress")}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        + Add Address
+      </button>
+    )}
+
+    {/* Add Address Form */}
+    {editingField === "newAddress" && (
+      <div className="flex flex-col gap-3 mt-4">
+        
+        <select
+  value={formData.newCounty}
+  onChange={(e) => {
+    const county = e.target.value;
+    setFormData({
+      ...formData,
+      newCounty: county,
+      newTown: "",   // reset town when county changes
+    });
+  }}
+  className="border rounded px-2 py-1 text-sm"
+>
+  <option value="">Select County</option>
+  {Object.keys(countiesAndTowns).map((county) => (
+    <option key={county} value={county}>{county}</option>
+  ))}
+</select>
+
+
+        <select
+  value={formData.newTown}
+  onChange={(e) =>
+    setFormData({ ...formData, newTown: e.target.value })
+  }
+  className="border rounded px-2 py-1 text-sm"
+  disabled={!formData.newCounty}
+>
+  <option value="">Select Town</option>
+
+  {formData.newCounty &&
+    countiesAndTowns[formData.newCounty].map((town) => (
+      <option key={town} value={town}>{town}</option>
+    ))
+  }
+</select>
+
+        <input
+          type="text"
+          placeholder="Address Details (Estate, Building, House No...)"
+          value={formData.newDetails}
+          onChange={(e) => setFormData({ ...formData, newDetails: e.target.value })}
+          className="border rounded px-2 py-1 text-sm"
+        />
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleAddAddress}
+            className="px-3 py-1 bg-green-600 text-white rounded"
+          >
+            Save
+          </button>
+
+          <button
+            onClick={() => setEditingField(null)}
+            className="px-3 py-1 bg-gray-300 rounded"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
     </div>
   );
 }

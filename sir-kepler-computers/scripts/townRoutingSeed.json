@@ -1,0 +1,56 @@
+{
+  "default": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+
+  "Nairobi": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Kiambu": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Machakos": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Kajiado": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+
+  "Mombasa": { "order": ["Mombasa", "Kilifi", "Nairobi", "Kakamega"] },
+  "Kilifi": { "order": ["Kilifi", "Mombasa", "Nairobi", "Kakamega"] },
+  "Kwale": { "order": ["Mombasa", "Kilifi", "Nairobi", "Kakamega"] },
+  "Taita-Taveta": { "order": ["Mombasa", "Kilifi", "Nairobi", "Kakamega"] },
+  "Lamu": { "order": ["Mombasa", "Kilifi", "Nairobi", "Kakamega"] },
+
+  "Kisumu": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "HomaBay": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Siaya": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Migori": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Kisii": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Nyamira": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+
+  "Kakamega": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Bungoma": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Vihiga": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Busia": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "TransNzoia": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "UasinGishu": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "ElgeyoMarakwet": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Nandi": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "WestPokot": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+
+  "Nakuru": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Nyeri": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Meru": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Embu": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "TharakaNithi": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Muranga": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Kirinyaga": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Makueni": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Kitui": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Baringo": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Laikipia": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+
+  "Narok": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Kericho": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+  "Bomet": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] },
+
+  "Isiolo": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Marsabit": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Garissa": { "order": ["Nairobi", "Mombasa", "Kilifi", "Kakamega"] },
+  "Wajir": { "order": ["Nairobi", "Mombasa", "Kilifi", "Kakamega"] },
+  "Mandera": { "order": ["Nairobi", "Mombasa", "Kilifi", "Kakamega"] },
+
+  "Samburu": { "order": ["Nairobi", "Kakamega", "Mombasa", "Kilifi"] },
+  "Turkana": { "order": ["Kakamega", "Nairobi", "Mombasa", "Kilifi"] }
+}

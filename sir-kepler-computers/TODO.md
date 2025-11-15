@@ -103,7 +103,7 @@
 
   ### Day 4 – Saturday
 
-  - Restrict checkout if phone not verified
+  ~~- Restrict checkout if phone not verified~~
 
   - Finalize cart flow (quantities, totals, validation)
 

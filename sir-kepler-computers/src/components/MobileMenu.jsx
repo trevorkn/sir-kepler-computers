@@ -44,33 +44,18 @@ const MobileMenu = ({ isOpen }) => {
                         <Link to="/recently-viewed" className='block'>
                         Recently Viewed
                         </Link>
+                        
                         )}
+                        
                     </div>
 
-            {/* Utilities */}
-            <button
-              onClick={() =>
-                setOpenCategory(openCategory === "utilities" ? null : "utilities")
-              }
-              className='w-full text-left font-semibold'
-              >
-                Utilities
-              </button>
-
-              {openCategory === "utilities" && (
-                <div className={`${openCategory === "utilities" ? 'block' : 'hidden'} ml-4 mt-2 space-y-1 text-gray-700`}>
-                    <Link to="/settings" className='block'>
-                    • Settings
+           
+              <Link to="/report" className='block'>
+                    Report a Problem
                     </Link>
-                    <Link to="/report" className='block'>
-                    • Report a Problem
+              <Link to="/help" className='block'>
+                     Help / FAQ
                     </Link>
-                    <Link to="/help" className='block'>
-                    • Help / FAQ
-                    </Link>
-                </div>
-              )}
-
               <Link to="/blogs" className="block">Blogs</Link>
               <Link to="/aboutUs" className='block'>
               About Us
